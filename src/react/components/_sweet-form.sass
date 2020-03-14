@@ -1,0 +1,56 @@
+.sweet-form
+
+    label
+        display: flex
+        flex-direction: column
+        margin: 20px 0
+        font-family: Arial, "Helvetica Neue", Helvetica,sans-serif
+        font-weight: bold
+        color: #0d3f8a
+
+        [type="input"],
+        [type="password"]
+            padding: 8px
+            margin-top: 8px
+            border: 2px solid #88d6f5
+            border-radius: 5px 
+            outline: none
+            color: #0d3f8a
+            font-size: 1rem
+            font-family: Arial, "Helvetica Neue", Helvetica,sans-serif
+
+        
+    .button
+        color: #fff
+        border-radius: .25em
+        outline: none
+        padding: .625em 2em
+        font-size: 1rem
+        cursor: pointer
+        margin: 0 10px
+
+        &.button-large
+            margin: 0
+            width: 100%
+
+
+        &-cancel
+            background-color: rgb(221, 51, 51)
+            border: 1px solid rgb(221, 51, 51)
+            &:hover
+                background-color: rgb(184, 36, 36)
+
+        &-accept
+            background-color: rgb(48, 133, 214)
+            border: 1px solid rgb(48, 133, 214)
+
+            &:hover
+                background-color: rgb(30, 107, 180)
+
+            &:disabled
+                background-color: rgb(199, 228, 255)
+                border: 1px solid rgb(199, 228, 255)
+                cursor: auto
+
+            &:focus
+                background-color: rgb(30, 107, 180)

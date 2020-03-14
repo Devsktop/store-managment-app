@@ -1,0 +1,86 @@
+.container.maintenance
+    display: flex
+    justify-content: center
+    align-items: center
+
+    .maintenance-box
+        display: flex
+        flex-direction: column
+        justify-content: space-around
+        padding: 20px
+        width: 500px
+        height: 300px
+        background-color: #fff
+        border: 2px solid #49c0f0
+        border-radius: 10px
+
+        maintenance-title
+        text-align: center
+        font-family: 'Maiandra GD', Arial
+        color: #0d3f8a
+
+        .maintenance-button-box
+            display: flex
+            justify-content: center
+            align-items: center
+            text-align: center
+
+
+            button
+                box-sizing: border-box
+                margin: 10px
+                padding: 8px 15px
+                border: 2px solid #88d6f5
+                border-radius: 5px
+                color: #0d3f8a
+                background-color: #fff
+                cursor: pointer
+                font-size: 1.1rem
+                font-weight: bold
+                transition: all 0.3s ease-in-out
+                flex: 1
+
+                &:focus,
+                &:hover 
+                    background-color: #0d3f8a
+                    color: #ffffff
+                    outline: none
+                
+                &:disabled 
+                    border: 1px solid #eee
+                    color: #eee
+                    background-color: #fff
+
+                    &:hover 
+                        border: 1px solid #eee
+                        color: #eee
+                        background-color: #fff
+                        cursor: auto
+
+.container.users-table
+    display: flex
+    flex-direction: column
+    justify-content: center
+    align-items: center
+
+    .users-table-contianer
+
+
+    .data-table
+        width: 300px
+        height: 200px
+
+    .button
+        color: #fff
+        border-radius: .25em
+        outline: none
+        padding: .625em 2em
+        font-size: 1rem
+        cursor: pointer
+        width: 100%
+
+        &-cancel
+            background-color: rgb(221, 51, 51)
+            border: 1px solid rgb(221, 51, 51)
+            &:hover
+                background-color: rgb(184, 36, 36)

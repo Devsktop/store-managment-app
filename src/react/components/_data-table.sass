@@ -1,0 +1,46 @@
+.div-data-table
+    height: 300px
+    background-color: rgb(211, 236, 243)
+    overflow: auto 
+    
+    .data-table
+        border-collapse: collapse
+        width: 100%
+        font-family: Arial, "Helvetica Neue", Helvetica, sans-serif
+        color: #0d3f8a
+        text-align: left
+       
+        th,td 
+            padding: 10px
+
+        thead tr
+            background-color: #fff
+            border-bottom: 2px solid #88d6f5
+
+        tbody tr
+            &:nth-child(odd)
+                background-color: rgb(211, 236, 243)
+            &:nth-child(even)
+                background-color: rgb(197, 228, 236)
+            &:hover 
+                background-color: rgb(168, 206, 216)
+            &.current-row
+                background-color: #0d3f8a !important
+                color: #fff
+                font-weight: bold
+
+            
+
+    .delete-icon
+        color: red
+        font-size: 1.2rem
+        cursor: pointer
+
+        &:hover
+            color: #fff
+
+    .update-icon
+        font-size: 1.2rem
+        cursor: pointer
+        &:hover
+            color: #fff

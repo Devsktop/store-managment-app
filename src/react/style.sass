@@ -1,0 +1,118 @@
+* 
+  margin: 0
+  padding: 0
+  box-sizing: border-box
+  
+
+
+body 
+  background-color: rgb(211, 236, 243)
+
+
+
+.root
+  height: 100vh
+  display: grid
+  grid-template-columns: 1fr
+  grid-template-rows: 100px 1fr
+
+.container 
+  width: 70%
+  margin: 0 auto
+
+
+@import ./components/style
+@import ./router/_navigation
+
+
+// SweetAlert classes
+
+.title-class,
+.content-class
+  font-family: Arial, "Helvetica Neue", Helvetica, sans-serif
+
+.icon-class
+  color: red
+
+// Loader classes
+
+.loader-container
+  position: absolute
+  top: 0
+  width: 0
+  width: 100%
+  height: 100%
+  display: flex
+  flex-direction: column
+  justify-content: center
+  align-items: center
+  z-index: -1
+
+  p
+    font-family: Arial, "Helvetica Neue", Helvetica, sans-serif
+    font-size: 1.3rem
+    color: #0d3f8a
+  
+
+.loader 
+  font-size: 10px
+  margin: 50px auto
+  text-indent: -9999em
+  width: 11em
+  height: 11em
+  border-radius: 50%
+  background: #49c0f0
+  background: -moz-linear-gradient(left, #49c0f0 10%, rgba(73,192,240, 0) 42%)
+  background: -webkit-linear-gradient(left, #49c0f0 10%, rgba(73,192,240, 0) 42%)
+  background: -o-linear-gradient(left, #49c0f0 10%, rgba(73,192,240, 0) 42%)
+  background: -ms-linear-gradient(left, #49c0f0 10%, rgba(73,192,240, 0) 42%)
+  background: linear-gradient(to right, #49c0f0 10%, rgba(73,192,240, 0) 42%)
+  position: relative
+  -webkit-animation: load3 1.4s infinite linear
+  animation: load3 1.4s infinite linear
+  -webkit-transform: translateZ(0)
+  -ms-transform: translateZ(0)
+  transform: translateZ(0)
+
+.loader:before 
+  width: 50%
+  height: 50%
+  background: #49c0f0
+  border-radius: 100% 0 0 0
+  position: absolute
+  top: 0
+  left: 0
+  content: ''
+
+.loader:after 
+  background: #d3ecf3
+  width: 75%
+  height: 75%
+  border-radius: 50%
+  content: ''
+  margin: auto
+  position: absolute
+  top: 0
+  left: 0
+  bottom: 0
+  right: 0
+
+@-webkit-keyframes load3 
+  0% 
+  -webkit-transform: rotate(0deg)
+  transform: rotate(0deg)
+  
+  100% 
+  -webkit-transform: rotate(360deg)
+  transform: rotate(360deg)
+  
+
+@keyframes load3 
+  0% 
+    -webkit-transform: rotate(0deg)
+    transform: rotate(0deg)
+  
+  100% 
+    -webkit-transform: rotate(360deg)
+    transform: rotate(360deg)
+  
