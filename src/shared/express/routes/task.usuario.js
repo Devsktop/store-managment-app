@@ -55,14 +55,11 @@ router.delete('/usuario', (req, res) => {
 //4.- Actualizar USUARIO---->http://localhost:3000/api/tasks/actusuario
 //FUNCIONA
 router.post('/actusuario', (req, res) => {
-  let { C_user, user, pass, adm, preg, resp } = req.body;
-  const query = ` CALL ActUsuario(?, ?, ?, ?, ?,?);
+  let { C_user, user,  adm } = req.body;
+  const query = ` CALL ActUsuario(?, ?, ?);
      `;
 
-  mysqlConnection.query(
-    query,
-    [C_user, user, pass, adm, preg, resp],
-    (err, rows, fields) => {
+  mysqlConnection.query(query,[C_user,  user, adm ],(err, rows, fields) => {
       if (!err) {
         res.json({
           Status: ' Se ha Actualizado el usuario:  ' + user + ' Correctamente.!'
@@ -123,6 +120,28 @@ router.post('/verificarUser2', (req, res)=> {
   });
 
 });
+
+
+//7.- Actualizar Contraseña---->http://localhost:3500/api/tasks/actPass
+//FUNCIONA
+router.post('/actPass', (req, res) => {
+  let { C_user, pass } = req.body;
+  const query = ` CALL ActPassword(?, ?);
+     `;
+
+  mysqlConnection.query(query,[C_user, pass ],(err, rows, fields) => {
+      if (!err) {
+        res.json({
+          Status: ' Se ha Actualizado la Contraseña Correctamente.!'
+        });
+      } else {
+        
+        console.log(err);
+      }
+    }
+  );
+});
+
 
 
 
