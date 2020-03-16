@@ -25,6 +25,8 @@ export const createUser = user => {
             const newUser = { ...user };
             // DO NOT SEND PASS TO STORE, ONLY TO DB
             delete newUser.pass;
+            delete newUser.question;
+            delete newUser.answer;
             dispatch(createUserAction(newUser));
             Swal.hideLoading();
             Swal.fire({
@@ -70,6 +72,8 @@ export const editeUser = user => {
         // PARA SIMULAR BDD, CAMBIAR LUEGO POR EL FETCH
         const newUser = { ...user };
         delete newUser.pass;
+        delete newUser.question;
+        delete newUser.answer;
         return new Promise(resolve => setTimeout(resolve, 3000))
           .then(() => {
             dispatch(updateUserAction(newUser));

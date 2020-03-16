@@ -101,6 +101,7 @@ const UserPortal = ({ user, onClose, onAccept }) => {
 
   const disableAccept = () => {
     if (!selectedUser && userPass === '') return true;
+    if (!selectedUser && answer === '') return true;
     if (userName.trim() !== '' && userPass === userPassConfirm) return false;
     return true;
   };
@@ -112,7 +113,7 @@ const UserPortal = ({ user, onClose, onAccept }) => {
       user: userName,
       pass: userPass,
       admin: permissionsSelect,
-      question: questionSelect,
+      question: questions[questionSelect],
       answer,
       id: selectedUser ? selectedUser.id : null
     };
