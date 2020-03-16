@@ -72,7 +72,38 @@ router.post('/actusuario', (req, res) => {
 });
 
 
-//5.-Verificar Usuario  PASO#1----> http://localhost:3500/api/tasks/verificarUser
+//5.-Login  Paso#0----> http://localhost:3000/api/tasks/Login
+//RECIBE: usuario y contraseña
+//Si Coincide Retorna:--->Tipo de admin "Admin": "admin"
+//Si NO Coincide Retorna: --->"resp": "Datos Invalidos"
+router.post('/Login', (req, res)=> {
+  const { userN, pass}= req.body;
+  
+  const query= `  CALL Login(?,?);
+   `;
+  
+   mysqlConnection.query(query,[userN,pass], (err, rows, fields) =>{
+       let userdata;
+    if (!err) {
+        userdata=rows[0][0];
+        console.log(userdata);
+
+        res.json({userdata});//Esta Repuesta Retorna: ---> "Admin": "admin"  En caso de haber coincidencia 
+        // No hay coincidencia:->"resp": "Datos Invalidos"
+
+
+       // res.json(rows);  ASI ESTABA EXACTAMENTE ANTES Por si acaso, PERO en caso de no haber coincidencia RETORNA:--->"resp": "Datos Invalidos"
+    } else {
+        console.log(err);
+    }
+  });
+
+});
+
+
+
+
+//6.-Verificar Usuario  PASO#1----> http://localhost:3500/api/tasks/verificarUser
 router.post('/verificarUser', (req, res)=> {
   const { userN}= req.body;
  
@@ -97,7 +128,7 @@ router.post('/verificarUser', (req, res)=> {
 });
 
 
-//6.-Verificar Usuario PASO#2----> http://localhost:3500/api/tasks/verificarUser2
+//7.-Verificar Usuario PASO#2----> http://localhost:3500/api/tasks/verificarUser2
 router.post('/verificarUser2', (req, res)=> {
   const { userid, resp}= req.body;
   
@@ -122,7 +153,7 @@ router.post('/verificarUser2', (req, res)=> {
 });
 
 
-//7.- Actualizar Contraseña---->http://localhost:3500/api/tasks/actPass
+//8.- Actualizar Contraseña---->http://localhost:3500/api/tasks/actPass
 //FUNCIONA
 router.post('/actPass', (req, res) => {
   let { C_user, pass } = req.body;
