@@ -40,7 +40,7 @@ const UserRecover = () => {
         />
       );
 
-    return <ChangePassword goBack={goBack} />;
+    return <ChangePassword goBack={goBack} id={userQuestion.id} />;
   };
 
   return <div className="container recover">{render()}</div>;

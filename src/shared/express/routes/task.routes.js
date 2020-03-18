@@ -158,28 +158,28 @@ router.post('/carritoventa', (req, res) => {
   );
 });
 
-//.- Login----> http://localhost:3500/api/tasks/Login
-//Recibe: Username y Password
-//Retorna: filas de la basede datos
-router.post('/Login', (req, res) => {
-  //res.header('Access-Control-Allow-Origin', 'http://localhost:3000');
-  //res.header('Access-Control-Allow-Headers', 'Content-Type');
+// //.- Login----> http://localhost:3500/api/tasks/Login
+// //Recibe: Username y Password
+// //Retorna: filas de la basede datos
+// router.post('/Login', (req, res) => {
+//   //res.header('Access-Control-Allow-Origin', 'http://localhost:3000');
+//   //res.header('Access-Control-Allow-Headers', 'Content-Type');
 
-  const { user, pass } = req.body;
-  const query = `  CALL verificar_usuario(?,?);
-     `;
+//   const { user, pass } = req.body;
+//   const query = `  CALL verificar_usuario(?,?);
+//      `;
 
-  mysqlConnection.query(query, [user, pass], (err, rows, fields) => {
-    if (!err) {
-      res.json(rows);
-      console.log(rows);
-      //   res.json({
-      //     Status: 'Resumen de ventas Desde:' + user + '-Hasta:' + pass
-      //   });
-    } else {
-      console.log(err);
-    }
-  });
-});
+//   mysqlConnection.query(query, [user, pass], (err, rows, fields) => {
+//     if (!err) {
+//       res.json(rows);
+//       console.log(rows);
+//       //   res.json({
+//       //     Status: 'Resumen de ventas Desde:' + user + '-Hasta:' + pass
+//       //   });
+//     } else {
+//       console.log(err);
+//     }
+//   });
+// });
 
 module.exports = router;

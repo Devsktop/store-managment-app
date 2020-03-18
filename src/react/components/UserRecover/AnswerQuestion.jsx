@@ -9,7 +9,7 @@ import Proptypes from 'prop-types';
 const AnswerQuestion = ({
   onAccept,
   goBack,
-  userQuestion: { user, question }
+  userQuestion: { user, question, id }
 }) => {
   const [isValidating, setIsValidating] = useState(false);
   const [answer, setAnswer] = useState('');
@@ -35,62 +35,73 @@ const AnswerQuestion = ({
   const handleSubmit = e => {
     e.preventDefault();
     setIsValidating(true);
-    new Promise(resolve => setTimeout(resolve, 3000)).then(() => {
-      // Validating answer in DB
-      // If answer is wrong
-      if (answer !== 'Guerrero') {
-        // If true will not block yet
-        if (answerAtt < 2) {
-          Swal.fire({
-            title: 'La repuesta es incorrecta',
-            text: '',
-            icon: 'error',
-            confirmButtonText: 'Continuar',
-            customClass: {
-              icon: 'icon-class',
-              title: 'title-class'
-            }
-          });
-          setAnswerAtt(c => c + 1);
-        } else {
-          // If this is the third attempt and answer is wrong will block the screen
-          let timerInterval;
-          Swal.fire({
-            title: 'Respuesta incorrecta!',
-            icon: 'error',
-            html: 'Debe esperar <b></b> segundos.',
-            customClass: {
-              content: 'content-class',
-              title: 'title-class'
-            },
-            timer: 10000,
-            timerProgressBar: true,
-            onBeforeOpen: () => {
-              Swal.showLoading();
-              timerInterval = setInterval(() => {
-                const content = Swal.getContent();
-                if (content) {
-                  const b = content.querySelector('b');
-                  if (b) {
-                    b.textContent = parseInt(Swal.getTimerLeft() / 1000, 10);
-                  }
-                }
-              }, 1000);
-            },
-            onClose: () => {
-              clearInterval(timerInterval);
-            },
-            allowOutsideClick: () => !Swal.isLoading()
-          }).then(() => {
-            setAnswerAtt(0);
-          });
-        }
-      } else {
-        // If answer is right will execute onAccept porp func
-        onAccept();
+    const url = 'http://localhost:3500/api/tasks/verificarUser2';
+    const config = {
+      method: 'POST',
+      body: JSON.stringify({ userid: id, resp: answer }),
+      headers: {
+        'Content-Type': 'application/json'
       }
-      setIsValidating(false);
-    });
+    };
+
+    fetch(url, config)
+      .then(res => res.json())
+      .then(({ userdata }) => {
+        // Validating answer in DB
+        // If answer is wrong
+        if (userdata.Aux === 'Respuesta_Invalida') {
+          // If true will not block yet
+          if (answerAtt < 2) {
+            Swal.fire({
+              title: 'La repuesta es incorrecta',
+              text: '',
+              icon: 'error',
+              confirmButtonText: 'Continuar',
+              customClass: {
+                icon: 'icon-class',
+                title: 'title-class'
+              }
+            });
+            setAnswerAtt(c => c + 1);
+          } else {
+            // If this is the third attempt and answer is wrong will block the screen
+            let timerInterval;
+            Swal.fire({
+              title: 'Respuesta incorrecta!',
+              icon: 'error',
+              html: 'Debe esperar <b></b> segundos.',
+              customClass: {
+                content: 'content-class',
+                title: 'title-class'
+              },
+              timer: 10000,
+              timerProgressBar: true,
+              onBeforeOpen: () => {
+                Swal.showLoading();
+                timerInterval = setInterval(() => {
+                  const content = Swal.getContent();
+                  if (content) {
+                    const b = content.querySelector('b');
+                    if (b) {
+                      b.textContent = parseInt(Swal.getTimerLeft() / 1000, 10);
+                    }
+                  }
+                }, 1000);
+              },
+              onClose: () => {
+                clearInterval(timerInterval);
+              },
+              allowOutsideClick: () => !Swal.isLoading()
+            }).then(() => {
+              setAnswerAtt(0);
+            });
+          }
+          setIsValidating(false);
+        } else if (userdata.Aux === 'Respuesta_Valida') {
+          // If answer is right will execute onAccept porp func
+          onAccept();
+        }
+      });
   };
 
   return (

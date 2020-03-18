@@ -32,7 +32,7 @@ export function login({ user, pass }) {
     // HACER FETCH A LA BDD
     const config = {
       method: 'POST',
-      body: JSON.stringify({ user, pass }),
+      body: JSON.stringify({ userN: user, pass }),
       headers: {
         'Content-Type': 'application/json'
       }
@@ -40,11 +40,10 @@ export function login({ user, pass }) {
 
     return fetch('http://localhost:3500/api/tasks/Login', config)
       .then(res => res.json())
-      .then(res => {
-        console.log(res);
-        if (res[0].length === 0) dispatch(badLog());
-        else if (res[0][0].admin) {
-          dispatch(correctLog(res[0][0].admin));
+      .then(({ userdata }) => {
+        if (userdata.resp) dispatch(badLog());
+        else if (userdata.Admin) {
+          dispatch(correctLog(userdata.Admin));
         }
       });
   };

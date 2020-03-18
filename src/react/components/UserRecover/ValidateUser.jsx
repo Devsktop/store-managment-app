@@ -29,26 +29,42 @@ const ValidateUser = ({ onAccept, goBack }) => {
   const handleSubmit = e => {
     e.preventDefault();
     setIsValidating(true);
-    new Promise(resolve => setTimeout(resolve, 3000)).then(() => {
-      // validating user in DB
-      if (user !== 'admin') {
-        Swal.fire({
-          title: 'El usuario ingresado no existe',
-          text: '',
-          icon: 'error',
-          confirmButtonText: 'Continuar',
-          customClass: {
-            icon: 'icon-class',
-            title: 'title-class'
-          }
-        });
-      } else {
-        // GET QUESTION AND USER FROM RES AND ID
-        const userQuestion = { user, question: 'Apellido de tu padre' };
-        onAccept(userQuestion);
+
+    const url = 'http://localhost:3500/api/tasks/verificarUser';
+    const config = {
+      method: 'POST',
+      body: JSON.stringify({ userN: user }),
+      headers: {
+        'Content-Type': 'application/json'
       }
-      setIsValidating(false);
-    });
+    };
+
+    fetch(url, config)
+      .then(res => res.json())
+      .then(({ userdata }) => {
+        if (userdata.resp === null) {
+          Swal.fire({
+            title: 'El usuario ingresado no existe',
+            text: '',
+            icon: 'error',
+            confirmButtonText: 'Continuar',
+            customClass: {
+              icon: 'icon-class',
+              title: 'title-class'
+            }
+          });
+          setIsValidating(false);
+        } else {
+          const { Id_Usuario, Pregunta_Seg } = userdata;
+
+          const userQuestion = {
+            id: Id_Usuario,
+            question: Pregunta_Seg,
+            user
+          };
+          onAccept(userQuestion);
+        }
+      });
   };
 
   return (

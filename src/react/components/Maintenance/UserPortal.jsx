@@ -113,7 +113,7 @@ const UserPortal = ({ user, onClose, onAccept }) => {
       user: userName,
       pass: userPass,
       admin: permissionsSelect,
-      question: questions[questionSelect],
+      question: questions[questionSelect].label,
       answer,
       id: selectedUser ? selectedUser.id : null
     };
@@ -169,7 +169,11 @@ const UserPortal = ({ user, onClose, onAccept }) => {
               </label>
               <label htmlFor="userAnswer">
                 Ingrese su respuesta secreta :
-                <input type="text" onChange={handleUserAnswer} value={answer} />
+                <input
+                  type="input"
+                  onChange={handleUserAnswer}
+                  value={answer}
+                />
               </label>
             </>
           )}
