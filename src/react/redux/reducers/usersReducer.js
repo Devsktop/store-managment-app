@@ -1,36 +1,21 @@
 import {
   CREATE_USER,
   UPDATE_USER,
-  DELETE_USER
+  DELETE_USER,
+  FETCH_USERS,
+  LOGOUT_USER
 } from 'react/redux/actions/usersActions';
 
 const initialState = {
-  users: {
-    0: {
-      id: 0,
-      user: 'Ricardo',
-      admin: 'SUPER_ADMIN'
-    },
-    1: {
-      id: 1,
-      user: 'Albani',
-      admin: 'NORMAL'
-    },
-    2: {
-      id: 2,
-      user: 'Lukas',
-      admin: 'NORMAL'
-    }
-  }
+  users: {}
 };
 
 export default function reducer(state = initialState, { type, payload }) {
   switch (type) {
     case CREATE_USER: {
-      // ID DEBE VENIR EN PAYLOAD DESDE LA BDD
-      const userId = Object.keys(state.users).length;
-      const user = { ...payload.user, id: userId };
-      const users = { ...state.users, [userId]: user };
+      const { id } = payload.user;
+      const user = { ...payload.user, id };
+      const users = { ...state.users, [id]: user };
       return {
         ...state,
         users
@@ -54,6 +39,16 @@ export default function reducer(state = initialState, { type, payload }) {
         users
       };
     }
+
+    case FETCH_USERS:
+      return {
+        users: payload.users
+      };
+
+    case LOGOUT_USER:
+      return {
+        users: {}
+      };
 
     default:
       return state;

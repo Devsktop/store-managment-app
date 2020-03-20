@@ -6,20 +6,15 @@ import {
   CREATE_PRODUCT,
   EDITE_PRODUCT,
   DELETE_PRODUCT,
-  CREATE_CATEGORY
+  CREATE_CATEGORY,
+  LOGOUT_STOCK
 } from '../actions/stockActions';
 
 const initialState = {
   products: {},
-  categories: {
-    0: { category: 'Miscellaneous', id: 0 },
-    1: { category: 'Vapers', id: 1 },
-    2: { category: 'Accesorios', id: 2 },
-    3: { category: 'Esencias', id: 3 }
-  },
+  categories: ['Miscellaneous', 'Vapers', 'Accesorios', 'Esencias'],
   currentCategory: -99,
-  productFilter: '',
-  isFetching: true
+  productFilter: ''
 };
 
 export default function reducer(state = initialState, { type, payload }) {
@@ -43,21 +38,15 @@ export default function reducer(state = initialState, { type, payload }) {
     }
 
     case FETCH_PRODUCTS:
-      console.log(payload.products);
       return {
         ...state,
-        products: { ...payload.products },
-        isFetching: false
+        products: { ...payload.products }
       };
 
     case CREATE_PRODUCT: {
-      // A EL PRODUCTO SE LE AGREGA LA LONGITUD SENGUN EL NUMERO DE
-      // DE REGISTRO EN EL STATE, ESTO ES PARA EFECTOS DE PRUEBA EN REACT
-      // ESTE CODIGO DEBE SER REMPLAZADO POR UNO QUE LUEGO UTILICE UN
-      // ID GENERADO POR LA BASE DE DATOS
-      const id = Object.keys(state.products).length;
+      const { id } = payload.product;
       const product = { ...payload.product, id };
-      const products = { ...state.products, [product.id]: product };
+      const products = { ...state.products, [id]: product };
       return {
         ...state,
         products
@@ -106,6 +95,11 @@ export default function reducer(state = initialState, { type, payload }) {
       return {
         ...state,
         productFilter: payload.value
+      };
+
+    case LOGOUT_STOCK:
+      return {
+        ...initialState
       };
 
     default:

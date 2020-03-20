@@ -7,13 +7,13 @@ import { deleteUser, editeUser } from 'react/redux/actions/usersActions';
 import UserPortal from '../UserPortal';
 
 const UsersTable = () => {
-  const users = useSelector(state =>
-    Object.keys(state.users.users).map(key => state.users.users[key])
-  );
+  const users = useSelector(state => state.users.users);
   const [showPortal, setShowPortal] = useState(false);
   const [userId, setUserId] = useState(null);
   const history = useHistory();
   const dispatch = useDispatch();
+
+  const usersData = Object.keys(users).map(key => users[key]);
 
   const HandleDeleteUser = id => {
     if (users[id].admin === 'SUPER_ADMIN') {
@@ -70,7 +70,7 @@ const UsersTable = () => {
       <div className="users-table-contianer">
         <DataTable
           properties={['Usuarios', 'Permisos']}
-          data={users}
+          data={usersData}
           deleteRow={HandleDeleteUser}
           updateRow={handleUpdateUser}
         />

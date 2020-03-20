@@ -1,3 +1,4 @@
+/* eslint-disable camelcase */
 import Swal from 'sweetalert2';
 
 export const SUBSTRACT_PRODUCTS = 'SUBSTRACT_PRODUCTS';
@@ -7,80 +8,6 @@ export const substractProduct = productQuantity => ({
   payload: { ...productQuantity }
 });
 
-export const FETCH_PRODUCTS = 'FETCH_PRODUCTS';
-
-export const fetchProductsAction = products => ({
-  type: FETCH_PRODUCTS,
-  payload: { products }
-});
-
-//  SOLO PARA SIMULAR LLAMADA A LA BASE DE DATOS
-const products = {
-  0: {
-    product: 'Vaper azul',
-    category: 1,
-    stock: 0,
-    purchasePrice: 20,
-    price: 30,
-    id: 0
-  },
-  1: {
-    product: 'Esencia vergataria',
-    category: 3,
-    stock: 13,
-    purchasePrice: 5,
-    price: 10,
-    id: 1
-  },
-  2: {
-    product: 'Vaper Electronico activo',
-    category: 1,
-    stock: 4,
-    purchasePrice: 40,
-    price: 60,
-    id: 2
-  },
-  3: {
-    product: 'Filtro de vaper',
-    category: 2,
-    stock: 20,
-    purchasePrice: 10,
-    price: 15,
-    id: 3
-  },
-  4: {
-    product: 'Resistencia normal',
-    category: 2,
-    stock: 15,
-    purchasePrice: 3,
-    price: 5,
-    id: 4
-  },
-  5: {
-    product: 'Vaper verde de marihuana',
-    category: 1,
-    stock: 6,
-    purchasePrice: 10,
-    price: 20,
-    id: 5
-  }
-};
-
-export function fetchProducts() {
-  return dispatch => {
-    // HACER FETCH A LA BDD
-    return new Promise(resolve => setTimeout(resolve, 3000))
-      .then(() => {
-        // ENVIAR LOS PRODUCTOS RES DE BDD
-        console.log('fetching products');
-        dispatch(fetchProductsAction(products));
-      })
-      .then(() => {
-        dispatch({ type: 'CART_FETCHED' });
-      });
-  };
-}
-
 export const CREATE_PRODUCT = 'CREATE_PRODUCT';
 
 const createProductAction = product => ({
@@ -88,7 +15,7 @@ const createProductAction = product => ({
   payload: { product }
 });
 
-export const createProduct = product => {
+export const createProduct = productn => {
   return dispatch => {
     Swal.fire({
       title: 'Creando producto',
@@ -100,21 +27,39 @@ export const createProduct = product => {
       },
       onOpen: () => {
         Swal.showLoading();
-        // PARA SIMULAR BDD, CAMBIAR LUEGO POR EL FETCH
-        return new Promise(resolve => setTimeout(resolve, 3000))
-          .then(() => {
-            dispatch(createProductAction(product));
-            Swal.hideLoading();
-            Swal.fire({
-              title: 'El producto se ha registrado con éxito',
-              text: '',
-              icon: 'success',
-              confirmButtonText: 'Aceptar',
-              customClass: {
-                icon: 'icon-class',
-                title: 'title-class'
-              }
-            });
+
+        const { product, category, stock, purchasePrice, price } = productn;
+        const url = 'http://localhost:3500/api/tasks/producto';
+        const config = {
+          method: 'POST',
+          body: JSON.stringify({
+            desc: product,
+            precio: price,
+            stock,
+            cat: category,
+            precio_c: purchasePrice
+          }),
+          headers: {
+            'Content-Type': 'application/json'
+          }
+        };
+        return fetch(url, config)
+          .then(res => res.json())
+          .then(res => {
+            if (res.status === 'ok') {
+              dispatch(createProductAction({ ...productn, id: res.id }));
+              Swal.hideLoading();
+              Swal.fire({
+                title: 'El producto se ha registrado con éxito',
+                text: '',
+                icon: 'success',
+                confirmButtonText: 'Aceptar',
+                customClass: {
+                  icon: 'icon-class',
+                  title: 'title-class'
+                }
+              });
+            }
           })
           .catch(() => {
             Swal.showValidationMessage('Ha ocurrido un error');
@@ -133,7 +78,7 @@ const editeProductAction = product => ({
   payload: { product }
 });
 
-export const editeProduct = product => {
+export const editeProduct = productn => {
   return dispatch => {
     Swal.fire({
       title: 'Modificando producto',
@@ -145,21 +90,40 @@ export const editeProduct = product => {
       },
       onOpen: () => {
         Swal.showLoading();
-        // PARA SIMULAR BDD, CAMBIAR LUEGO POR EL FETCH
-        return new Promise(resolve => setTimeout(resolve, 3000))
-          .then(() => {
-            dispatch(editeProductAction(product));
-            Swal.hideLoading();
-            Swal.fire({
-              title: 'El producto se ha modificado con éxito',
-              text: '',
-              icon: 'success',
-              confirmButtonText: 'Aceptar',
-              customClass: {
-                icon: 'icon-class',
-                title: 'title-class'
-              }
-            });
+        const { product, category, stock, purchasePrice, price, id } = productn;
+        const url = 'http://localhost:3500/api/tasks/actproducto';
+        const config = {
+          method: 'POST',
+          body: JSON.stringify({
+            cp: id,
+            des: product,
+            pre: price,
+            cant: stock,
+            cat: category,
+            pre_com: purchasePrice
+          }),
+          headers: {
+            'Content-Type': 'application/json'
+          }
+        };
+
+        return fetch(url, config)
+          .then(res => res.json())
+          .then(res => {
+            if (res.status === 'ok') {
+              dispatch(editeProductAction(productn));
+              Swal.hideLoading();
+              Swal.fire({
+                title: 'El producto se ha modificado con éxito',
+                text: '',
+                icon: 'success',
+                confirmButtonText: 'Aceptar',
+                customClass: {
+                  icon: 'icon-class',
+                  title: 'title-class'
+                }
+              });
+            }
           })
           .catch(() => {
             Swal.showValidationMessage('Ha ocurrido un error');
@@ -199,11 +163,21 @@ export function deleteProduct(id) {
       showLoaderOnConfirm: true,
       preConfirm: () => {
         Swal.getCancelButton().style.display = 'none';
-        return new Promise(resolve => setTimeout(resolve, 3000));
+        const url = 'http://localhost:3500/api/tasks/producto';
+        const config = {
+          method: 'DELETE',
+          body: JSON.stringify({
+            id
+          }),
+          headers: {
+            'Content-Type': 'application/json'
+          }
+        };
+        return fetch(url, config).then(res => res.json());
       },
       allowOutsideClick: () => !Swal.isLoading()
     }).then(result => {
-      if (result.value) {
+      if (result.value.status === 'ok') {
         dispatch(deleteProductAction(id));
         Swal.fire({
           title: '¡Eliminado!',
@@ -279,3 +253,53 @@ export const productFilter = value => ({
   type: PRODUCT_FILTER,
   payload: { value }
 });
+
+export const FETCH_PRODUCTS = 'FETCH_PRODUCTS';
+
+export const fetchProductsAction = products => ({
+  type: FETCH_PRODUCTS,
+  payload: { products }
+});
+
+export function fetchProducts() {
+  return dispatch => {
+    // HACER FETCH A LA BDD
+    const url = 'http://localhost:3500/api/tasks/producto';
+
+    return fetch(url)
+      .then(res => res.json())
+      .then(res => {
+        const products = {};
+
+        // Parse res from API to APP Format
+        res.forEach(product => {
+          const {
+            Id_Producto,
+            Descripcion_P,
+            Precio_P,
+            Stock,
+            Categoria,
+            Precio_Compra
+          } = product;
+
+          products[Id_Producto] = {
+            product: Descripcion_P,
+            category: Categoria,
+            stock: Stock,
+            purchasePrice: Precio_Compra,
+            price: Precio_P,
+            id: Id_Producto
+          };
+        });
+
+        console.log(products);
+
+        dispatch(fetchProductsAction(products));
+      })
+      .catch(err => {
+        console.log('hubo error:' + err);
+      });
+  };
+}
+
+export const LOGOUT_STOCK = 'LOGOUT_STOCK';

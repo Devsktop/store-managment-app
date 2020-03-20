@@ -29,72 +29,107 @@ export const addSaleRecord = () => {
       onOpen: () => {
         Swal.showLoading();
         // PARA SIMULAR BDD, CAMBIAR LUEGO POR EL FETCH
-        return new Promise(resolve => setTimeout(resolve, 3000))
-          .then(() => {
-            // Get current cart Data
-            const {
-              totals: { dolar, bolivar },
-              cart,
-              paymentMethod,
-              observations,
-              profits: { profitDolar, profitBolivar }
-            } = getState().cart;
 
-            // Store cart's products in a variable
-            const recordProducts = [...cart];
+        // Get current cart Data
+        const {
+          totals: { dolar, bolivar },
+          cart,
+          paymentMethod,
+          observations,
+          profits: { profitDolar, profitBolivar }
+        } = getState().cart;
 
-            const substracProducts = {};
+        // product id and cant to send to DBB
+        const productsCant = cart.map(({ id, quantity }) => ({
+          id,
+          cant: quantity
+        }));
 
-            // create an object with the product's ids as keys and the quantity to be substracted as values
-            recordProducts.forEach(({ id, quantity }) => {
-              substracProducts[id] = quantity;
-            });
+        // Store cart's products in a variable
+        const recordProducts = [...cart];
 
-            // Dispatch to the stockReducer
-            dispatch({
-              type: SUBSTRACT_PRODUCTS,
-              payload: { ...substracProducts }
-            });
+        const substracProducts = {};
 
-            // Create sale record Data
-            const record = {
-              date: parseDateToYMD(new Date()),
-              dolar,
-              bolivar,
-              paymentMethod,
-              observations
-            };
+        // create an object with the product's ids as keys and the quantity to be substracted as values
+        recordProducts.forEach(({ id, quantity }) => {
+          substracProducts[id] = quantity;
+        });
 
-            // Create profit object
-            const profits = {
-              dolar,
-              bolivar,
-              profitDolar,
-              profitBolivar
-            };
+        // Create sale record Data
+        const record = {
+          date: parseDateToYMD(new Date()),
+          dolar,
+          bolivar,
+          paymentMethod,
+          observations
+        };
 
-            // Dispatch to the saleRecordsReducer
-            dispatch({
-              type: ADD_SALE_RECORD,
-              payload: { record, recordProducts, profits }
-            });
+        // Create profit object
+        const profits = {
+          dolar,
+          bolivar,
+          profitDolar,
+          profitBolivar
+        };
 
-            dispatch({ type: 'CLEAN_FIELDS' });
+        // Info to API
+        const url = 'http://localhost:3500/api/tasks/carritoventa';
 
-            Swal.hideLoading();
-            Swal.fire({
-              title: 'Venta realizada con exito',
-              text: '',
-              icon: 'success',
-              confirmButtonText: 'Aceptar',
-              customClass: {
-                icon: 'icon-class',
-                title: 'title-class'
-              }
-            });
-          })
-          .catch(() => {
-            Swal.showValidationMessage('Ha ocurrido un error');
+        const config = {
+          method: 'POST',
+          body: JSON.stringify({
+            products: productsCant,
+            mt: paymentMethod,
+            obv: observations
+          }),
+          headers: {
+            'Content-Type': 'application/json'
+          }
+        };
+
+        return fetch(url, config)
+          .then(res => res.json())
+          .then(res => {
+            if (res.status === 'ok') {
+              const { id } = res;
+              // Dispatch to the stockReducer
+              dispatch({
+                type: SUBSTRACT_PRODUCTS,
+                payload: { ...substracProducts }
+              });
+
+              // Dispatch to the saleRecordsReducer
+              dispatch({
+                type: ADD_SALE_RECORD,
+                payload: { record, recordProducts, profits, id }
+              });
+
+              dispatch({ type: 'CLEAN_FIELDS' });
+
+              Swal.hideLoading();
+              Swal.fire({
+                title: 'Venta realizada con exito',
+                text: '',
+                icon: 'success',
+                confirmButtonText: 'Aceptar',
+                customClass: {
+                  icon: 'icon-class',
+                  title: 'title-class'
+                }
+              });
+            } else {
+              Swal.hideLoading();
+              Swal.fire({
+                title: 'Ha ocurrido un error',
+                text: '',
+                icon: 'error',
+                confirmButtonText: 'Aceptar',
+                customClass: {
+                  icon: 'icon-class',
+                  title: 'title-class'
+                }
+              });
+            }
           });
       },
       allowOutsideClick: () => !Swal.isLoading(),
@@ -124,23 +159,35 @@ export function fetchSaleRecords(from, to) {
     const parsedFrom = parseDateToYMD(from);
     const parsedTo = parseDateToYMD(to);
 
-    // HACER FETCH A LA BDD
-    return new Promise(resolve => setTimeout(resolve, 3000)).then(() => {
-      console.log('fetching RECORDS');
-      const recordsData = {
-        records: {},
-        recordsProducts: {},
-        currentRecord: [],
-        profits: {
-          totalProfitDolar: 0,
-          netProfitDolar: 0,
-          totalProfitBolivar: 0,
-          netProfitBolivar: 0
-        },
-        recordsFilter: parseDateToYMD(new Date())
-      };
+    const url = 'http://localhost:3500/api/tasks/RegistroFecha';
+    const config = {
+      method: 'POST',
+      body: JSON.stringify({ Desde: parsedFrom, Hasta: parsedTo }),
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    };
 
-      dispatch(fetcSaleRecordsAction(recordsData));
-    });
+    // HACER FETCH A LA BDD
+    return fetch(url, config)
+      .then(res => res.json())
+      .then(res => {
+        console.log(res);
+        console.log(new Date(res[0][0].Fecha));
+        const recordsData = {
+          records: {},
+          recordsProducts: {},
+          currentRecord: [],
+          profits: {
+            totalProfitDolar: 0,
+            netProfitDolar: 0,
+            totalProfitBolivar: 0,
+            netProfitBolivar: 0
+          }
+        };
+        dispatch(fetcSaleRecordsAction(recordsData));
+      });
   };
 }
+
+export const LOGOUT_SALE_RECORDS = 'LOGOUT_SALE_RECORDS';

@@ -1,7 +1,8 @@
 import {
   ADD_SALE_RECORD,
   SELECT_SALE_RECORD,
-  FETCH_SALE_RECORDS
+  FETCH_SALE_RECORDS,
+  LOGOUT_SALE_RECORDS
 } from '../actions/saleRecordsActions';
 
 const initialState = {
@@ -13,15 +14,14 @@ const initialState = {
     netProfitDolar: 0,
     totalProfitBolivar: 0,
     netProfitBolivar: 0
-  },
-  recordsFilter: ''
+  }
 };
 
 export default function reducer(state = initialState, { type, payload }) {
   switch (type) {
     case ADD_SALE_RECORD: {
       // EFECTOS DE REACT, CAMBIAR CUANDO TENGA SERVIDOR
-      const recordId = Object.keys(state.records).length;
+      const recordId = payload.id;
 
       const records = {
         ...state.records,
@@ -39,14 +39,10 @@ export default function reducer(state = initialState, { type, payload }) {
         netProfitBolivar: state.profits.netProfitBolivar + profitBolivar
       };
 
-      console.log(records);
-
       const recordsProducts = {
         ...state.recordsProducts,
         [recordId]: payload.recordProducts
       };
-
-      console.log(recordsProducts);
 
       return {
         ...state,
@@ -66,6 +62,11 @@ export default function reducer(state = initialState, { type, payload }) {
       return {
         ...state,
         ...payload
+      };
+
+    case LOGOUT_SALE_RECORDS:
+      return {
+        ...initialState
       };
 
     default:
