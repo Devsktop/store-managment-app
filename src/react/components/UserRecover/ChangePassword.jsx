@@ -6,7 +6,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { useHistory } from 'react-router-dom';
 import Proptypes from 'prop-types';
 
-const ValidateUser = ({ goBack }) => {
+const ChangePassword = ({ goBack, id }) => {
   const [pass, setPass] = useState('');
   const [repeatPass, setRepeatPass] = useState('');
   const history = useHistory();
@@ -41,23 +41,33 @@ const ValidateUser = ({ goBack }) => {
       },
       onOpen: () => {
         Swal.showLoading();
-        // PARA SIMULAR BDD, CAMBIAR LUEGO POR EL FETCH
-        return new Promise(resolve => setTimeout(resolve, 3000))
-          .then(() => {
+        const url = 'http://localhost:3500/api/tasks/actPass';
+        const config = {
+          method: 'POST',
+          body: JSON.stringify({ C_user: id, pass }),
+          headers: {
+            'Content-Type': 'application/json'
+          }
+        };
+
+        fetch(url, config)
+          .then(res => res.json())
+          .then(({ status }) => {
             Swal.hideLoading();
-            Swal.fire({
-              title: 'Su contraseña se ha cambiado con éxito',
-              text: '',
-              icon: 'success',
-              confirmButtonText: 'Aceptar',
-              customClass: {
-                icon: 'icon-class',
-                title: 'title-class'
-              }
-            }).then(() => history.push('/login'));
-          })
-          .catch(() => {
-            Swal.showValidationMessage('Ha ocurrido un error');
+            if (status === 'ok') {
+              Swal.fire({
+                title: 'Su contraseña se ha cambiado con éxito',
+                text: '',
+                icon: 'success',
+                confirmButtonText: 'Aceptar',
+                customClass: {
+                  icon: 'icon-class',
+                  title: 'title-class'
+                }
+              }).then(() => history.push('/login'));
+            } else if (status === 'error') {
+              Swal.showValidationMessage('Ha ocurrido un error');
+            }
           });
       },
       allowOutsideClick: () => !Swal.isLoading(),
@@ -97,8 +107,9 @@ const ValidateUser = ({ goBack }) => {
   );
 };
 
-ValidateUser.propTypes = {
-  goBack: Proptypes.func.isRequired
+ChangePassword.propTypes = {
+  goBack: Proptypes.func.isRequired,
+  id: Proptypes.number.isRequired
 };
 
-export default ValidateUser;
+export default ChangePassword;
