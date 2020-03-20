@@ -98,7 +98,7 @@ router.post('/actdolar', (req, res) => {
   });
 });
 
-//5.-Filtrar Resumen de Venta por Fecha----> http://localhost:3000/api/tasks/ResumenFecha
+//6.-Filtrar Resumen de Venta por Fecha----> http://localhost:3000/api/tasks/ResumenFecha
 //Recibe: Fechas Desde Hasta
 //Retorna: Resumen de Venta filtrada por las fechas ingresadas
 router.post('/ResumenFecha', (req, res) => {
@@ -109,14 +109,14 @@ router.post('/ResumenFecha', (req, res) => {
   mysqlConnection.query(query, [Desde, Hasta], (err, rows, fields) => {
     if (!err) {
       res.json(rows);
-      //res.json({Status: "Resumen de ventas Desde:"+Desde+"-Hasta:"+Hasta});
+      //res.json({Status: "RESUMEN DE VENTAS Desde:"+Desde+"-Hasta:"+Hasta});
     } else {
       console.log(err);
     }
   });
 });
 
-//5.-Filtrar Resumen de Venta por Fecha----> http://localhost:3000/api/tasks/RegistroFecha
+//7.-Filtrar Resumen de Venta por Fecha----> http://localhost:3000/api/tasks/RegistroFecha
 //Recibe: Fechas Desde Hasta
 //Retorna: Resumen de Venta filtrada por las fechas ingresadas
 router.post('/RegistroFecha', (req, res) => {
@@ -127,14 +127,14 @@ router.post('/RegistroFecha', (req, res) => {
   mysqlConnection.query(query, [Desde, Hasta], (err, rows, fields) => {
     if (!err) {
       res.json(rows);
-      //res.json({Status: "Resumen de ventas Desde:"+Desde+"-Hasta:"+Hasta});
+      //res.json({Status: "REGISTRO DEL DIA Desde:"+Desde+"-Hasta:"+Hasta});
     } else {
       console.log(err);
     }
   });
 });
 
-// Carrito de http://localhost:3000/api/tasks/carritoventa/////////////////////////////////////////////////////
+//8.-Carrito de venta http://localhost:3000/api/tasks/carritoventa/////////////////////////////////////////////////////
 router.post('/carritoventa', (req, res) => {
   let IDD = 0;
   // producst [ {id,cant}, ....]
@@ -165,28 +165,49 @@ router.post('/carritoventa', (req, res) => {
   });
 });
 
-// //.- Login----> http://localhost:3500/api/tasks/Login
-// //Recibe: Username y Password
-// //Retorna: filas de la basede datos
-// router.post('/Login', (req, res) => {
-//   //res.header('Access-Control-Allow-Origin', 'http://localhost:3000');
-//   //res.header('Access-Control-Allow-Headers', 'Content-Type');
+//9.-Ver Ventas ----> http://localhost:3000/api/tasks/Ver_Ventas
+//Recibe: Id de registro de ventas
+// Retorna:  Id_Venta,  Id_ResumenVenta,	Descripcion_P,	Precio_P,	Cantidad,	Total---> DE LAS VENTAS ASOCIADAS AL REGISTRO DE VENTAS
 
-//   const { user, pass } = req.body;
-//   const query = `  CALL verificar_usuario(?,?);
-//      `;
+router.post('/Ver_Venta', (req, res) => {
+  let { id } = req.body;
+  const query = `  CALL Ver_Venta(?);
+   `;
 
-//   mysqlConnection.query(query, [user, pass], (err, rows, fields) => {
-//     if (!err) {
-//       res.json(rows);
-//       console.log(rows);
-//       //   res.json({
-//       //     Status: 'Resumen de ventas Desde:' + user + '-Hasta:' + pass
-//       //   });
-//     } else {
-//       console.log(err);
-//     }
-//   });
-// });
+  mysqlConnection.query(query, [id], (err, rows, fields) => {
+    let userdata;
+    if (!err) {
+      userdata = rows[0][0];
+      console.log(userdata);
+      //res.json({userdata});
+    } else {
+      console.log(err);
+    }
+  });
+});
+
+//.- Login----> http://localhost:3500/api/tasks/Login
+//Recibe: Username y Password
+//Retorna: filas de la basede datos
+router.post('/Login', (req, res) => {
+  //res.header('Access-Control-Allow-Origin', 'http://localhost:3000');
+  //res.header('Access-Control-Allow-Headers', 'Content-Type');
+
+  const { user, pass } = req.body;
+  const query = `  CALL verificar_usuario(?,?);
+     `;
+
+  mysqlConnection.query(query, [user, pass], (err, rows, fields) => {
+    if (!err) {
+      res.json(rows);
+      console.log(rows);
+      //   res.json({
+      //     Status: 'Resumen de ventas Desde:' + user + '-Hasta:' + pass
+      //   });
+    } else {
+      console.log(err);
+    }
+  });
+});
 
 module.exports = router;
