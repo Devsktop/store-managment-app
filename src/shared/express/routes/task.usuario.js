@@ -15,10 +15,13 @@ router.post('/usuario', (req, res) => {
     (err, rows, fields) => {
       if (!err) {
         res.json({
-          Status: ' Se ha Agregado  el Usuario:  ' + user + ' Correctamente.!'
+          status: 'ok',
+          id: rows.insertId
         });
       } else {
-        console.log(err);
+        res.json({
+          status: 'error'
+        });
       }
     }
   );
@@ -39,15 +42,15 @@ router.get('/usuario', (req, res) => {
 //3.-Borrar Producto ---> http://localhost:3000/api/tasks/usuario
 //FUINCIONA
 router.delete('/usuario', (req, res) => {
-  const { Id_Usuario } = req.body;
+  const { id } = req.body;
   const query = `  DELETE FROM usuario WHERE Id_Usuario =(?);
      `;
 
-  mysqlConnection.query(query, [Id_Usuario], (err, rows, fields) => {
+  mysqlConnection.query(query, [id], (err, rows, fields) => {
     if (!err) {
-      res.json({ Status: 'Usuario Eliminado correctamente!' });
+      res.json({ status: 'ok' });
     } else {
-      console.log(err);
+      res.json({ status: 'error' });
     }
   });
 });
@@ -55,17 +58,15 @@ router.delete('/usuario', (req, res) => {
 //4.- Actualizar USUARIO---->http://localhost:3000/api/tasks/actusuario
 //FUNCIONA
 router.post('/actusuario', (req, res) => {
-  let { C_user, user, adm } = req.body;
+  let { id, user, adm } = req.body;
   const query = ` CALL ActUsuario(?, ?, ?);
      `;
 
-  mysqlConnection.query(query, [C_user, user, adm], (err, rows, fields) => {
+  mysqlConnection.query(query, [id, user, adm], (err, rows, fields) => {
     if (!err) {
-      res.json({
-        Status: ' Se ha Actualizado el usuario:  ' + user + ' Correctamente.!'
-      });
+      res.json({ status: 'ok' });
     } else {
-      console.log(err);
+      res.json({ status: 'ok' });
     }
   });
 });

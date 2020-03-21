@@ -33,9 +33,9 @@ const customStyles = {
 
 const categoriesSelector = state => {
   const { categories } = state.stock;
-  return Object.keys(categories).map(key => ({
-    value: categories[key].id,
-    label: categories[key].category
+  return categories.map(category => ({
+    value: category,
+    label: category
   }));
 };
 

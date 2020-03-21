@@ -3,7 +3,8 @@ import {
   DELETE_PRODUCT_FROM_CART,
   SET_PAYMENT_METHOD,
   SET_OBSERVATIONS,
-  CLEAN_FIELDS
+  CLEAN_FIELDS,
+  SET_DOLAR
 } from '../actions/cartActions';
 
 // FALTA EXCHANGE ACTION
@@ -19,7 +20,7 @@ const initialState = {
     profitDolar: 0,
     profitBolivar: 0
   },
-  exchange: 10000,
+  exchange: 0,
   paymentMethod: '',
   observations: ''
 };
@@ -97,6 +98,12 @@ export default function reducer(state = initialState, { type, payload }) {
       return {
         ...state,
         observations: payload.observations
+      };
+
+    case SET_DOLAR:
+      return {
+        ...state,
+        exchange: payload.dolar
       };
 
     case CLEAN_FIELDS: {

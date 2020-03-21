@@ -7,7 +7,7 @@ const createUserAction = user => ({
   payload: { user }
 });
 
-export const createUser = user => {
+export const createUser = usern => {
   return dispatch => {
     Swal.fire({
       title: 'Creando usuario',
@@ -19,26 +19,43 @@ export const createUser = user => {
       },
       onOpen: () => {
         Swal.showLoading();
-        // PARA SIMULAR BDD, CAMBIAR LUEGO POR EL FETCH
-        return new Promise(resolve => setTimeout(resolve, 3000))
-          .then(() => {
-            const newUser = { ...user };
-            // DO NOT SEND PASS TO STORE, ONLY TO DB
-            delete newUser.pass;
-            delete newUser.question;
-            delete newUser.answer;
-            dispatch(createUserAction(newUser));
-            Swal.hideLoading();
-            Swal.fire({
-              title: 'El usuario se ha registrado con éxito',
-              text: '',
-              icon: 'success',
-              confirmButtonText: 'Aceptar',
-              customClass: {
-                icon: 'icon-class',
-                title: 'title-class'
-              }
-            });
+        const { user, pass, admin, question, answer } = usern;
+        const url = 'http://localhost:3500/api/tasks/usuario';
+        const config = {
+          method: 'POST',
+          body: JSON.stringify({
+            user,
+            pass,
+            adm: admin,
+            preg: question,
+            resp: answer
+          }),
+          headers: {
+            'Content-Type': 'application/json'
+          }
+        };
+        return fetch(url, config)
+          .then(res => res.json())
+          .then(res => {
+            if (res.status === 'ok') {
+              const newUser = { ...usern, id: res.id };
+              // DO NOT SEND PASS TO STORE, ONLY TO DB
+              delete newUser.pass;
+              delete newUser.question;
+              delete newUser.answer;
+              dispatch(createUserAction(newUser));
+              Swal.hideLoading();
+              Swal.fire({
+                title: 'El usuario se ha registrado con éxito',
+                text: '',
+                icon: 'success',
+                confirmButtonText: 'Aceptar',
+                customClass: {
+                  icon: 'icon-class',
+                  title: 'title-class'
+                }
+              });
+            }
           })
           .catch(() => {
             Swal.showValidationMessage('Ha ocurrido un error');
@@ -57,7 +74,7 @@ const updateUserAction = user => ({
   payload: { user }
 });
 
-export const editeUser = user => {
+export const editeUser = usern => {
   return dispatch => {
     Swal.fire({
       title: 'Modificando usuario',
@@ -69,25 +86,41 @@ export const editeUser = user => {
       },
       onOpen: () => {
         Swal.showLoading();
-        // PARA SIMULAR BDD, CAMBIAR LUEGO POR EL FETCH
-        const newUser = { ...user };
-        delete newUser.pass;
-        delete newUser.question;
-        delete newUser.answer;
-        return new Promise(resolve => setTimeout(resolve, 3000))
-          .then(() => {
-            dispatch(updateUserAction(newUser));
-            Swal.hideLoading();
-            Swal.fire({
-              title: 'El usuario se ha modificado con éxito',
-              text: '',
-              icon: 'success',
-              confirmButtonText: 'Aceptar',
-              customClass: {
-                icon: 'icon-class',
-                title: 'title-class'
-              }
-            });
+
+        const { user, admin, id } = usern;
+        const url = 'http://localhost:3500/api/tasks/actusuario';
+        const config = {
+          method: 'POST',
+          body: JSON.stringify({
+            user,
+            adm: admin,
+            id
+          }),
+          headers: {
+            'Content-Type': 'application/json'
+          }
+        };
+        return fetch(url, config)
+          .then(res => res.json())
+          .then(res => {
+            if (res.status === 'ok') {
+              const newUser = { ...usern };
+              delete newUser.pass;
+              delete newUser.question;
+              delete newUser.answer;
+              dispatch(updateUserAction(newUser));
+              Swal.hideLoading();
+              Swal.fire({
+                title: 'El usuario se ha modificado con éxito',
+                text: '',
+                icon: 'success',
+                confirmButtonText: 'Aceptar',
+                customClass: {
+                  icon: 'icon-class',
+                  title: 'title-class'
+                }
+              });
+            }
           })
           .catch(() => {
             Swal.showValidationMessage('Ha ocurrido un error');
@@ -108,8 +141,6 @@ const deleteUserAction = id => ({
 
 export function deleteUser(id) {
   return dispatch => {
-    // HACER FETCH A LA BDD
-
     Swal.fire({
       title: '¿Seguro que desea eliminar este Usuario?',
       text: '¡No podrás revertir esta acción!',
@@ -127,11 +158,19 @@ export function deleteUser(id) {
       showLoaderOnConfirm: true,
       preConfirm: () => {
         Swal.getCancelButton().style.display = 'none';
-        return new Promise(resolve => setTimeout(resolve, 3000));
+        const url = 'http://localhost:3500/api/tasks/usuario';
+        const config = {
+          method: 'DELETE',
+          body: JSON.stringify({ id }),
+          headers: {
+            'Content-Type': 'application/json'
+          }
+        };
+        return fetch(url, config).then(res => res.json());
       },
       allowOutsideClick: () => !Swal.isLoading()
     }).then(result => {
-      if (result.value) {
+      if (result.value.status === 'ok') {
         dispatch(deleteUserAction(id));
         Swal.fire({
           title: '¡Eliminado!',
@@ -148,3 +187,36 @@ export function deleteUser(id) {
     });
   };
 }
+
+export const FETCH_USERS = 'FETCH_USERS';
+
+const fetchUsersAction = users => ({
+  type: FETCH_USERS,
+  payload: { users }
+});
+
+export const fetchUsers = () => {
+  return dispatch => {
+    const url = 'http://localhost:3500/api/tasks/usuario';
+    fetch(url)
+      .then(res => res.json())
+      .then(res => {
+        const users = {};
+
+        if (res) {
+          res.forEach(user => {
+            users[user.Id_Usuario] = {
+              id: user.Id_Usuario,
+              user: user.Username,
+              admin: user.Admin
+            };
+          });
+        }
+
+        console.log(users);
+        dispatch(fetchUsersAction(users));
+      });
+  };
+};
+
+export const LOGOUT_USER = 'LOGOUT_USER';

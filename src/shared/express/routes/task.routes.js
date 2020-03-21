@@ -18,10 +18,13 @@ router.post('/producto', (req, res) => {
     (err, rows, fields) => {
       if (!err) {
         res.json({
-          Status: ' Se ha Agregado  el producto:  ' + desc + ' Correctamente.!'
+          status: 'ok',
+          id: rows.insertId
         });
       } else {
-        console.log(err);
+        res.json({
+          status: 'error'
+        });
       }
     }
   );
@@ -40,15 +43,15 @@ router.get('/producto', (req, res) => {
 
 //3.-Borrar Producto ---> http://localhost:3000/api/tasks/producto
 router.delete('/producto', (req, res) => {
-  const idprod = req.body;
+  const { id } = req.body;
   const query = `  DELETE FROM producto WHERE producto.Id_Producto =(?);
      `;
 
-  mysqlConnection.query(query, [idprod], (err, rows, fields) => {
+  mysqlConnection.query(query, [id], (err, rows, fields) => {
     if (!err) {
-      res.json({ Status: 'Producto Eliminado correctamente!' });
+      res.json({ status: 'ok' });
     } else {
-      console.log(err);
+      res.json({ status: 'error' });
     }
   });
 });
@@ -65,10 +68,12 @@ router.post('/actproducto', (req, res) => {
     (err, rows, fields) => {
       if (!err) {
         res.json({
-          Status: ' Se ha Actualizado el producto:  ' + des + ' Correctamente.!'
+          status: 'ok'
         });
       } else {
-        console.log(err);
+        res.json({
+          status: 'error'
+        });
       }
     }
   );
@@ -80,11 +85,15 @@ router.post('/actdolar', (req, res) => {
   const query = `  CALL ActDolar(?);
      `;
 
-  mysqlConnection.query(query, [Dolar], (err, rows, fields) => {
+  mysqlConnection.query(query, [Dolar], err => {
     if (!err) {
-      res.json({ Status: 'Precio del dolar asignado correctamente!' });
+      res.json({
+        status: 'ok'
+      });
     } else {
-      console.log(err);
+      res.json({
+        status: 'error'
+      });
     }
   });
 });
@@ -128,72 +137,54 @@ router.post('/RegistroFecha', (req, res) => {
 //8.-Carrito de venta http://localhost:3000/api/tasks/carritoventa/////////////////////////////////////////////////////
 router.post('/carritoventa', (req, res) => {
   let IDD = 0;
-  const lista = ([{ codp, cantp, mt, obv }] = req.body);
+  // producst [ {id,cant}, ....]
+  const { products, mt, obv } = req.body;
   const query = ` CALL Agregar_Venta(?, ?, ?);
     `;
   const dt = ` INSERT INTO resumen_venta ( Total_Venta, Total_Bs, Metodo_Pago, Observacion, Fecha, Total_Neto)  VALUES ( ?, ?, ?, ?, CURDATE(),?);
 `;
 
-  //Llamado Base de Datos INSERT Detale_Venta + Procedure Agregar Venta
-  mysqlConnection.query(
-    dt,
-    [0, 0, lista[0].mt, lista[0].obv, 0],
-    (err, rows) => {
-      if (!err) {
-        IDD = rows.insertId;
+  // Llamado Base de Datos INSERT Detale_Venta + Procedure Agregar Venta
+  mysqlConnection.query(dt, [0, 0, mt, obv, 0], (err, rows) => {
+    if (!err) {
+      IDD = rows.insertId;
 
-        for (let i = 0; i < lista.length; i++) {
-          //LLAMADO #2 CON CICLO FOR Y MULTIPLES INSERTS
-          mysqlConnection.query(
-            query,
-            [lista[i].codp, lista[i].cantp, IDD],
-            () => {}
-          );
-        }
-        res.json({ Status: ' Venta #' + IDD + ' Registrada Correctamente.!' });
-      } else {
-        // console.log("ERROR");
-      }
+      products.forEach(({ id, cant }) => {
+        // LLAMADO #2 CON CICLO FOR Y MULTIPLES INSERTS
+        mysqlConnection.query(query, [id, cant, IDD], () => {});
+      });
+      res.json({
+        status: 'ok',
+        id: IDD
+      });
+    } else {
+      res.json({
+        status: 'error'
+      });
     }
-  );
+  });
 });
-
-
 
 //9.-Ver Ventas ----> http://localhost:3000/api/tasks/Ver_Ventas
 //Recibe: Id de registro de ventas
 // Retorna:  Id_Venta,  Id_ResumenVenta,	Descripcion_P,	Precio_P,	Cantidad,	Total---> DE LAS VENTAS ASOCIADAS AL REGISTRO DE VENTAS
 
-
-router.post('/Ver_Venta', (req, res)=> {
-  let {id}= req.body;
-  const query= `  CALL Ver_Venta(?);
+router.post('/Ver_Venta', (req, res) => {
+  let { id } = req.body;
+  const query = `  CALL Ver_Venta(?);
    `;
-   
-   mysqlConnection.query(query,[id], (err, rows, fields) =>{
-       let userdata;
+
+  mysqlConnection.query(query, [id], (err, rows, fields) => {
+    let userdata;
     if (!err) {
-        userdata=rows[0][0];
-        console.log(userdata);
-        //res.json({userdata});
-    
+      userdata = rows[0][0];
+      console.log(userdata);
+      //res.json({userdata});
     } else {
-        console.log(err);
+      console.log(err);
     }
   });
-
 });
-
-
-
-
-
-
-
-
-
-
-
 
 //.- Login----> http://localhost:3500/api/tasks/Login
 //Recibe: Username y Password
@@ -218,8 +209,5 @@ router.post('/Login', (req, res) => {
     }
   });
 });
-
-
-
 
 module.exports = router;

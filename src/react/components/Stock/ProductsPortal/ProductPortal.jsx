@@ -34,15 +34,15 @@ const customStyles = {
 
 const ProductPortal = ({ product, onClose, onAccept }) => {
   const categories = useSelector(state => state.stock.categories);
-  const categoriesNames = Object.keys(categories).map(key => ({
-    value: categories[key].id,
-    label: categories[key].category
+  const categoriesNames = categories.map(category => ({
+    value: category,
+    label: category
   }));
 
   const defaultCategory = product
     ? {
-        value: categories[product.category].id,
-        label: categories[product.category].category
+        value: product.category,
+        label: product.category
       }
     : categoriesNames[0];
 
@@ -50,7 +50,9 @@ const ProductPortal = ({ product, onClose, onAccept }) => {
     product ? product.product : ''
   );
   const [stock, setStock] = useState(product ? product.stock : '');
-  const [category, setCategory] = useState(product ? product.category : 0);
+  const [category, setCategory] = useState(
+    product ? product.category : categories[0]
+  );
   const [purchase, setPurchase] = useState(
     product ? product.purchasePrice : ''
   );

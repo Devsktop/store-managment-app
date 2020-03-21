@@ -1,16 +1,11 @@
 import { fetchSaleRecords } from 'react/redux/actions/saleRecordsActions';
 import { fetchProducts } from 'react/redux/actions/stockActions';
+import { fetchUsers } from 'react/redux/actions/usersActions';
 
 export const IS_LOGIN = 'IS_LOGIN';
 
 const isLogin = () => ({
   type: IS_LOGIN
-});
-
-export const LOG_OUT = 'LOG_OUT';
-
-export const logOut = () => ({
-  type: LOG_OUT
 });
 
 export const CORRECT_LOG = 'CORRECT_LOG';
@@ -67,7 +62,24 @@ export function fetchData() {
     return new Promise(resolve => setTimeout(resolve, 3000)).then(async () => {
       await dispatch(fetchProducts());
       await dispatch(fetchSaleRecords(new Date(), new Date()));
+      await dispatch(fetchUsers());
       await dispatch(dataLoadedAction());
     });
   };
 }
+
+export const LOG_OUT = 'LOG_OUT';
+
+export function logOut() {
+  return dispatch => {
+    dispatch({ type: 'CLEAN_FIELDS' });
+    dispatch({ type: 'LOGOUT_SALE_RECORDS' });
+    dispatch({ type: 'LOGOUT_STOCK' });
+    dispatch({ type: 'LOGOUT_USER' });
+    dispatch({ type: 'LOG_OUT' });
+  };
+}
+
+// Call type: CLEAN_FIELDS to logout cart
+// Call type: LOGOUT_SALE_RECORDS to logout sale records
+// Call type: LOGOUT_STOCK to logout stock

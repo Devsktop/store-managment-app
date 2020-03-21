@@ -1,28 +1,32 @@
 /* eslint-disable jsx-a11y/anchor-is-valid */
-import React from 'react';
+import React, { useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { NavLink, useHistory } from 'react-router-dom';
 import Swal from 'sweetalert2';
 import { logOut } from 'react/redux/actions/loginActions';
-
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
   faCartPlus,
   faBoxOpen,
   faCalendarAlt,
   faTools,
   faQuestion,
-  faDoorOpen
+  faDoorOpen,
+  faDollarSign
 } from '@fortawesome/free-solid-svg-icons';
 import NavIconLink from './NavIconLink';
+import DolarPortal from 'react/components/DolarPortal';
 
 const Navigation = () => {
   const dataLoaded = useSelector(state => state.login.dataLoaded);
   const admin = useSelector(state => state.login.admin);
   const dispatch = useDispatch();
   const history = useHistory();
+  const [showDolar, setShowDolar] = useState(false);
 
   const seeMenu = admin === 'SUPER_ADMIN' || admin === 'ADMIN';
 
+  // Handle exit button
   const exit = e => {
     e.preventDefault();
     Swal.fire({
@@ -46,10 +50,28 @@ const Navigation = () => {
     });
   };
 
+  // Handle dollar button
+  const dolar = () => {
+    setShowDolar(true);
+  };
+
+  const closeDolarPortal = () => {
+    setShowDolar(false);
+  };
+
   return (
     <nav className="navigation">
       <div className="container">
-        <div className="logo">Vaper&apos;s VE</div>
+        <div className="logo">
+          <p>Vaper&apos;s VE</p>
+          {dataLoaded && (
+            <FontAwesomeIcon
+              icon={faDollarSign}
+              className="dollar-icon"
+              onClick={dolar}
+            />
+          )}
+        </div>
         {dataLoaded && (
           <ul className="navbar">
             <li className="navbar-item">
@@ -131,6 +153,7 @@ const Navigation = () => {
           </ul>
         )}
       </div>
+      {showDolar && <DolarPortal onClose={closeDolarPortal} />}
     </nav>
   );
 };

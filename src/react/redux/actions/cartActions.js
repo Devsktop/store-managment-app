@@ -32,4 +32,9 @@ export const cleanFields = () => ({
   type: CLEAN_FIELDS
 });
 
-export const CART_FETCHED = 'CART_FETCHED';
+export const SET_DOLAR = 'SET_DOLAR';
+
+export const setDolar = dolar => ({
+  type: SET_DOLAR,
+  payload: { dolar }
+});

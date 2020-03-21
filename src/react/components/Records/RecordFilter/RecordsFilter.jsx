@@ -1,9 +1,12 @@
 /* eslint-disable no-useless-computed-key */
 import React, { useState } from 'react';
+import { useDispatch } from 'react-redux';
 import Select from 'react-select';
 import DatePicker, { registerLocale } from 'react-datepicker';
 import es from 'date-fns/locale/es';
 import 'react-datepicker/dist/react-datepicker.css';
+
+import { fetchSaleRecords } from 'react/redux/actions/saleRecordsActions';
 
 registerLocale('es', es);
 
@@ -47,6 +50,7 @@ const ExampleCustomInput = ({ value, onClick }) => (
 );
 
 const RecordsFilter = () => {
+  const dispatch = useDispatch();
   const [option, setOption] = useState('today');
   const [startDate, setStartDate] = useState(new Date());
   const [endDate, setEndDate] = useState(new Date());
@@ -55,7 +59,7 @@ const RecordsFilter = () => {
   // Asyncronous call to api to get Records
   // INCLUIR DISPATCH
   const handleSearchDate = (from, to) => {
-    console.log(`from ${from} to ${to}`);
+    dispatch(fetchSaleRecords(from, to));
   };
 
   const handleSelect = ({ value }) => {

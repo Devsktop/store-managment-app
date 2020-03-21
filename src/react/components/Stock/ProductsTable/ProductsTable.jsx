@@ -52,7 +52,7 @@ const ProductsTable = () => {
 
   const productsData = products.map(product => ({
     ...product,
-    category: categories[product.category].category,
+    category: product.category,
     profit: product.price - product.purchasePrice
   }));
 
