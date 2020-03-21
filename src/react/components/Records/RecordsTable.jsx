@@ -12,9 +12,6 @@ const RecordsTable = () => {
     ...recordsO[key]
   }));
 
-  console.log(records);
-  console.log('Renderizé recordsTable');
-
   const onClickRow = rowId => {
     dispatch(selectSaleRecord(rowId));
   };

@@ -59,7 +59,7 @@ const dataLoadedAction = () => ({
 export function fetchData() {
   return dispatch => {
     // HACER FETCH A LA BDD
-    return new Promise(resolve => setTimeout(resolve, 3000)).then(async () => {
+    return new Promise(resolve => setTimeout(resolve, 0)).then(async () => {
       await dispatch(fetchProducts());
       await dispatch(fetchSaleRecords(new Date(), new Date()));
       await dispatch(fetchUsers());

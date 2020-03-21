@@ -198,7 +198,7 @@ const fetchUsersAction = users => ({
 export const fetchUsers = () => {
   return dispatch => {
     const url = 'http://localhost:3500/api/tasks/usuario';
-    fetch(url)
+    return fetch(url)
       .then(res => res.json())
       .then(res => {
         const users = {};

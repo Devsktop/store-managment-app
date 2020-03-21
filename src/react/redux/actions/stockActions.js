@@ -177,7 +177,7 @@ export function deleteProduct(id) {
       },
       allowOutsideClick: () => !Swal.isLoading()
     }).then(result => {
-      if (result.value.status === 'ok') {
+      if (result.value) {
         dispatch(deleteProductAction(id));
         Swal.fire({
           title: '¡Eliminado!',

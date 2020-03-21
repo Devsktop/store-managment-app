@@ -165,7 +165,7 @@ router.post('/carritoventa', (req, res) => {
   });
 });
 
-//9.-Ver Ventas ----> http://localhost:3000/api/tasks/Ver_Ventas
+//9.-Ver Ventas ----> http://localhost:3000/api/tasks/Ver_Venta
 //Recibe: Id de registro de ventas
 // Retorna:  Id_Venta,  Id_ResumenVenta,	Descripcion_P,	Precio_P,	Cantidad,	Total---> DE LAS VENTAS ASOCIADAS AL REGISTRO DE VENTAS
 
@@ -175,37 +175,17 @@ router.post('/Ver_Venta', (req, res) => {
    `;
 
   mysqlConnection.query(query, [id], (err, rows, fields) => {
-    let userdata;
     if (!err) {
-      userdata = rows[0][0];
-      console.log(userdata);
-      //res.json({userdata});
+      const userdata = rows[0];
+      res.json({
+        status: 'ok',
+        userdata
+      });
     } else {
-      console.log(err);
-    }
-  });
-});
-
-//.- Login----> http://localhost:3500/api/tasks/Login
-//Recibe: Username y Password
-//Retorna: filas de la basede datos
-router.post('/Login', (req, res) => {
-  //res.header('Access-Control-Allow-Origin', 'http://localhost:3000');
-  //res.header('Access-Control-Allow-Headers', 'Content-Type');
-
-  const { user, pass } = req.body;
-  const query = `  CALL verificar_usuario(?,?);
-     `;
-
-  mysqlConnection.query(query, [user, pass], (err, rows, fields) => {
-    if (!err) {
-      res.json(rows);
-      console.log(rows);
-      //   res.json({
-      //     Status: 'Resumen de ventas Desde:' + user + '-Hasta:' + pass
-      //   });
-    } else {
-      console.log(err);
+      res.json({
+        status: 'error',
+        err
+      });
     }
   });
 });
