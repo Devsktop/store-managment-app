@@ -181,6 +181,75 @@ router.post('/Ver_Venta', (req, res) => {
         status: 'ok',
         userdata
       });
+
+      userdata = rows[0][0];
+      res.json({ userdata });
+    } else {
+      console.log(err);
+    }
+  });
+});
+
+//10.-Crear Backup ----> http://localhost:3000/api/tasks/Backup
+//REQUIERE DEPENDENCIA:  npm install mysql-backup
+//RECIBE: Ruta Destino donde se guardara el respaldo
+router.get('/Backup', (req, res) => {
+  let { ruta } = req.body;
+  // let direc = "C:/Desktop/"
+  const mysqlBackup = require('mysql-backup');
+  var fs = require('fs');
+  mysqlBackup({
+    host: 'localhost',
+    user: 'root',
+    password: '',
+    schema: true,
+    data: true,
+    database: 'vapersve',
+    ifNotExist: true
+  }).then(dump => {
+    fs.writeFileSync(ruta + 'VapersBackup.sql', dump); //RUTA + NOMBRE DEL ARCHIVO SQL
+
+    //console.log(dump);
+  });
+  res.json({ Status: ' Respaldo guardado con exito' });
+});
+
+//11.-RESTORE ----> http://localhost:3000/api/tasks/Restore
+//RECIBE RUTA DESTINO de donde esta ubicado el respaldo
+router.get('/Restore', (req, res) => {
+  let { ruta } = req.body;
+  let database = 'DB_PRUEBA'; //vapersve
+  // let direc = "C:/Desktop/"
+
+  var exec = require('child_process').exec;
+  var cmd = ' mysql -u root ' + database + ' < ' + ruta + 'VapersBackup.sql';
+  console.log(cmd);
+
+  exec(cmd, function(error, stdout, stderr) {
+    // command output is in stdout
+  });
+
+  res.json({ Status: ' Datos Cargados con exito' });
+});
+
+//.- Login----> http://localhost:3500/api/tasks/Login
+//Recibe: Username y Password
+//Retorna: filas de la basede datos
+router.post('/Login', (req, res) => {
+  //res.header('Access-Control-Allow-Origin', 'http://localhost:3000');
+  //res.header('Access-Control-Allow-Headers', 'Content-Type');
+
+  const { user, pass } = req.body;
+  const query = `  CALL verificar_usuario(?,?);
+     `;
+
+  mysqlConnection.query(query, [user, pass], (err, rows, fields) => {
+    if (!err) {
+      res.json(rows);
+      console.log(rows);
+      //   res.json({
+      //     Status: 'Resumen de ventas Desde:' + user + '-Hasta:' + pass
+      //   });
     } else {
       res.json({
         status: 'error',
