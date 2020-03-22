@@ -26,8 +26,6 @@ const AddToCart = () => {
   const exchange = useSelector(state => state.cart.exchange);
   const products = useSelector(productsInCart);
 
-  console.log('renderizé AddToCart');
-
   // Refs
   const quantityInputRef = useRef();
   const SelectInputRef = useRef();

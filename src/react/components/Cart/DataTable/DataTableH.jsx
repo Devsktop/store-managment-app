@@ -14,8 +14,6 @@ const DataTableH = () => {
     dispatch(deleteProductFromCart(productId));
   };
 
-  console.log('renderize tabla');
-
   return (
     <>
       <DataTable

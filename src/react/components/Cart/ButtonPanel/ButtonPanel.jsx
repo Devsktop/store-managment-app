@@ -15,8 +15,6 @@ const ButtonPanel = () => {
   const disable = useSelector(activateButton);
   const dispatch = useDispatch();
 
-  console.log('renderize buttons');
-
   const handleClean = () => {
     dispatch(cleanFields());
   };

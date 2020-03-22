@@ -33,11 +33,10 @@ export const addSaleRecord = () => {
 
         // Get current cart Data
         const {
-          totals: { dolar, bolivar },
+          totals: { dolar },
           cart,
           paymentMethod,
-          observations,
-          profits: { profitDolar, profitBolivar }
+          observations
         } = getState().cart;
 
         // product id and cant to send to DBB
@@ -60,18 +59,8 @@ export const addSaleRecord = () => {
         const record = {
           date: parseDateToYMD(new Date()),
           dolar,
-          bolivar,
           paymentMethod,
           observations
-        };
-
-        // VER MAS TARDE PARA ELIMINAR
-        // Create profit object
-        const profits = {
-          dolar,
-          bolivar,
-          profitDolar,
-          profitBolivar
         };
 
         // Info to API
@@ -93,17 +82,20 @@ export const addSaleRecord = () => {
           .then(res => res.json())
           .then(res => {
             if (res.status === 'ok') {
+              // EXTRAER EL TOTAL NETO CUANDO ACTUALIZEN RUTA
               const { id } = res;
               // Dispatch to the stockReducer
               dispatch({
                 type: SUBSTRACT_PRODUCTS,
                 payload: { ...substracProducts }
               });
+              // ESTO LO CREO AQUI MIENTRAS ACTUALIZAN RUTA
+              const netTotal = 0;
 
               // Dispatch to the saleRecordsReducer
               dispatch({
                 type: ADD_SALE_RECORD,
-                payload: { record, profits, id }
+                payload: { record, id, netTotal }
               });
 
               dispatch({ type: 'CLEAN_FIELDS' });
@@ -187,9 +179,9 @@ export function selectSaleRecord(id) {
 
 export const FETCH_SALE_RECORDS = 'FETCH_SALE_RECORDS';
 
-export const fetcSaleRecordsAction = records => ({
+export const fetcSaleRecordsAction = (records, total, netTotal) => ({
   type: FETCH_SALE_RECORDS,
-  payload: { records }
+  payload: { records, total, netTotal }
 });
 
 // SIMULANDO LLAMADA A BASE DE DATOS
@@ -214,12 +206,12 @@ export function fetchSaleRecords(from, to) {
         console.log('fetch records');
         if (res[0].length > 0) {
           const records = {};
+          let total = 0;
           let netTotal = 0;
           res[0].forEach(record => {
             const {
               Id_ResumenVenta,
               Total_Venta,
-              Total_Bs,
               Metodo_Pago,
               Observacion,
               Fecha,
@@ -230,18 +222,24 @@ export function fetchSaleRecords(from, to) {
               id: Id_ResumenVenta,
               date: parseDateToYMD(new Date(Fecha)),
               dolar: Total_Venta,
-              bolivar: Total_Bs,
               paymentMethod: Metodo_Pago,
               observations: Observacion
             };
-
+            total += Total_Venta;
             netTotal += Total_Neto;
           });
-          console.log(records);
-          dispatch(fetcSaleRecordsAction(records));
+
+          dispatch(fetcSaleRecordsAction(records, total, netTotal));
         }
       });
   };
 }
 
 export const LOGOUT_SALE_RECORDS = 'LOGOUT_SALE_RECORDS';
+
+export const SET_TODAY = 'SET_TODAY';
+
+export const setToday = today => ({
+  type: SET_TODAY,
+  payload: { today }
+});

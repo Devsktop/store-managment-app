@@ -2,45 +2,36 @@ import {
   ADD_SALE_RECORD,
   SELECT_SALE_RECORD,
   FETCH_SALE_RECORDS,
-  LOGOUT_SALE_RECORDS
+  LOGOUT_SALE_RECORDS,
+  SET_TODAY
 } from '../actions/saleRecordsActions';
 
 const initialState = {
   records: {},
   currentRecord: [],
-  profits: {
-    totalProfitDolar: 0,
-    netProfitDolar: 0,
-    totalProfitBolivar: 0,
-    netProfitBolivar: 0
-  }
+  total: 0,
+  netTotal: 0,
+  today: true
 };
 
 export default function reducer(state = initialState, { type, payload }) {
   switch (type) {
     case ADD_SALE_RECORD: {
       const recordId = payload.id;
-
       const records = {
-        ...state.records,
-        [recordId]: { ...payload.record, id: recordId }
+        [recordId]: { ...payload.record, id: recordId },
+        ...state.records
       };
 
-      // extracting profits
-      const { dolar, bolivar, profitDolar, profitBolivar } = payload.profits;
-
-      // Create object and Acumulating profits values
-      const profits = {
-        totalProfitDolar: state.profits.totalProfitDolar + dolar,
-        netProfitDolar: state.profits.netProfitDolar + profitDolar,
-        totalProfitBolivar: state.profits.totalProfitBolivar + bolivar,
-        netProfitBolivar: state.profits.netProfitBolivar + profitBolivar
-      };
+      const total = state.total + payload.record.dolar;
+      const netTotal = state.netTotal + payload.netTotal;
+      // falta total neto
 
       return {
         ...state,
         records,
-        profits
+        total,
+        netTotal
       };
     }
 
@@ -53,7 +44,15 @@ export default function reducer(state = initialState, { type, payload }) {
     case FETCH_SALE_RECORDS:
       return {
         ...state,
-        records: payload.records
+        records: payload.records,
+        total: payload.total,
+        netTotal: payload.netTotal
+      };
+
+    case SET_TODAY:
+      return {
+        ...state,
+        today: payload.today
       };
 
     case LOGOUT_SALE_RECORDS:

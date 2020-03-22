@@ -1,12 +1,16 @@
 /* eslint-disable no-useless-computed-key */
-import React, { useState } from 'react';
-import { useDispatch } from 'react-redux';
+import React, { useState, useEffect } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import Select from 'react-select';
 import DatePicker, { registerLocale } from 'react-datepicker';
 import es from 'date-fns/locale/es';
 import 'react-datepicker/dist/react-datepicker.css';
 
-import { fetchSaleRecords } from 'react/redux/actions/saleRecordsActions';
+import {
+  fetchSaleRecords,
+  setToday,
+  selectSaleRecord
+} from 'react/redux/actions/saleRecordsActions';
 
 registerLocale('es', es);
 
@@ -55,16 +59,33 @@ const RecordsFilter = () => {
   const [startDate, setStartDate] = useState(new Date());
   const [endDate, setEndDate] = useState(new Date());
   const [day, setDay] = useState(new Date());
+  const today = useSelector(state => state.saleRecords.today);
+
+  useEffect(() => {
+    return () => {
+      if (!today) {
+        dispatch(setToday(true));
+        dispatch(selectSaleRecord(null));
+        dispatch(fetchSaleRecords(new Date(), new Date()));
+      }
+    };
+  }, [today]);
 
   // Asyncronous call to api to get Records
   // INCLUIR DISPATCH
   const handleSearchDate = (from, to) => {
+    dispatch(setToday(false));
+    dispatch(selectSaleRecord(null));
     dispatch(fetchSaleRecords(from, to));
   };
 
   const handleSelect = ({ value }) => {
     setOption(value);
-    if (value === 'today') handleSearchDate(new Date(), new Date());
+    if (value === 'today') {
+      dispatch(setToday(true));
+      dispatch(selectSaleRecord(null));
+      dispatch(fetchSaleRecords(new Date(), new Date()));
+    }
   };
 
   const handleFrom = date => {

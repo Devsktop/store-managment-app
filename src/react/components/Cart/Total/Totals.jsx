@@ -4,7 +4,6 @@ import { useSelector } from 'react-redux';
 
 const Totals = () => {
   const { dolar, bolivar } = useSelector(state => state.cart.totals);
-  console.log('renderizé totals');
 
   return (
     <div className="totals">

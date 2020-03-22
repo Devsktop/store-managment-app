@@ -5,22 +5,18 @@ import React from 'react';
 import { useSelector } from 'react-redux';
 
 const RecordsTotals = () => {
-  const {
-    totalProfitDolar,
-    netProfitDolar,
-    totalProfitBolivar,
-    netProfitBolivar
-  } = useSelector(state => state.saleRecords.profits);
+  const { total, netTotal } = useSelector(state => state.saleRecords);
+  const { exchange } = useSelector(state => state.cart);
 
   return (
     <div className="records-totals">
       <div className="records-totals-panel">
-        <p>Ganancia total $: {totalProfitDolar}</p>
-        <p>Ganancia total Bs.S: {totalProfitBolivar}</p>
+        <p>Ganancia total $: {total}</p>
+        <p>Ganancia total Bs.S: {total * exchange}</p>
       </div>
       <div className="records-totals-panel">
-        <p>Ganancia neta $: {totalProfitDolar - netProfitDolar}</p>
-        <p>Ganancia neta Bs.S: {totalProfitBolivar - netProfitBolivar}</p>
+        <p>Ganancia neta $: {netTotal}</p>
+        <p>Ganancia neta Bs.S: {netTotal * exchange}</p>
       </div>
     </div>
   );

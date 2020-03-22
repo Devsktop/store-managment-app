@@ -20,8 +20,6 @@ const Description = () => {
     dispatch(setObservations(e.target.value));
   };
 
-  console.log('renderize description');
-
   return (
     <div className="description">
       <label htmlFor="payment">

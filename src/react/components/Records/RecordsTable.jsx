@@ -6,11 +6,23 @@ import { selectSaleRecord } from 'react/redux/actions/saleRecordsActions';
 
 const RecordsTable = () => {
   const dispatch = useDispatch();
+  const { exchange } = useSelector(state => state.cart);
   const recordsO = useSelector(state => state.saleRecords.records);
-  const records = Object.keys(recordsO).map(key => ({
-    codigo: recordsO[key].id,
-    ...recordsO[key]
-  }));
+  const records = Object.keys(recordsO)
+    .map(key => {
+      const { date, dolar, paymentMethod, observations, id } = recordsO[key];
+
+      return {
+        codigo: id,
+        date,
+        dolar,
+        bolivar: dolar * exchange,
+        paymentMethod,
+        observations,
+        id
+      };
+    })
+    .reverse();
 
   const onClickRow = rowId => {
     dispatch(selectSaleRecord(rowId));
