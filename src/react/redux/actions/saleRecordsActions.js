@@ -1,3 +1,4 @@
+/* eslint-disable camelcase */
 import Swal from 'sweetalert2';
 import { SUBSTRACT_PRODUCTS } from './stockActions';
 
@@ -64,6 +65,7 @@ export const addSaleRecord = () => {
           observations
         };
 
+        // VER MAS TARDE PARA ELIMINAR
         // Create profit object
         const profits = {
           dolar,
@@ -101,7 +103,7 @@ export const addSaleRecord = () => {
               // Dispatch to the saleRecordsReducer
               dispatch({
                 type: ADD_SALE_RECORD,
-                payload: { record, recordProducts, profits, id }
+                payload: { record, profits, id }
               });
 
               dispatch({ type: 'CLEAN_FIELDS' });
@@ -140,16 +142,54 @@ export const addSaleRecord = () => {
 
 export const SELECT_SALE_RECORD = 'SELECT_SALE_RECORD';
 
-export const selectSaleRecord = id => ({
+const selectSaleRecordAction = record => ({
   type: SELECT_SALE_RECORD,
-  payload: { id }
+  payload: { record }
 });
+
+export function selectSaleRecord(id) {
+  return (dispatch, getState) => {
+    const url = 'http://localhost:3500/api/tasks/Ver_Venta';
+    const config = {
+      method: 'POST',
+      body: JSON.stringify({ id }),
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    };
+
+    const { exchange } = getState().cart;
+
+    return fetch(url, config)
+      .then(res => res.json())
+      .then(res => {
+        if (res.status === 'ok') {
+          const record = res.userdata.map(e => {
+            const { Descripcion_P, Precio_P, Cantidad, Total, Id_Venta } = e;
+
+            return {
+              id: Id_Venta,
+              product: Descripcion_P,
+              quantity: Cantidad,
+              price: Precio_P,
+              total: Total,
+              totalBs: Total * exchange
+            };
+          });
+          dispatch(selectSaleRecordAction(record));
+        }
+      })
+      .catch(err => {
+        console.log(err);
+      });
+  };
+}
 
 export const FETCH_SALE_RECORDS = 'FETCH_SALE_RECORDS';
 
-export const fetcSaleRecordsAction = recordsData => ({
+export const fetcSaleRecordsAction = records => ({
   type: FETCH_SALE_RECORDS,
-  payload: { ...recordsData }
+  payload: { records }
 });
 
 // SIMULANDO LLAMADA A BASE DE DATOS
@@ -168,24 +208,38 @@ export function fetchSaleRecords(from, to) {
       }
     };
 
-    // HACER FETCH A LA BDD
     return fetch(url, config)
       .then(res => res.json())
       .then(res => {
-        console.log(res);
-        console.log(new Date(res[0][0].Fecha));
-        const recordsData = {
-          records: {},
-          recordsProducts: {},
-          currentRecord: [],
-          profits: {
-            totalProfitDolar: 0,
-            netProfitDolar: 0,
-            totalProfitBolivar: 0,
-            netProfitBolivar: 0
-          }
-        };
-        dispatch(fetcSaleRecordsAction(recordsData));
+        console.log('fetch records');
+        if (res[0].length > 0) {
+          const records = {};
+          let netTotal = 0;
+          res[0].forEach(record => {
+            const {
+              Id_ResumenVenta,
+              Total_Venta,
+              Total_Bs,
+              Metodo_Pago,
+              Observacion,
+              Fecha,
+              Total_Neto
+            } = record;
+
+            records[Id_ResumenVenta] = {
+              id: Id_ResumenVenta,
+              date: parseDateToYMD(new Date(Fecha)),
+              dolar: Total_Venta,
+              bolivar: Total_Bs,
+              paymentMethod: Metodo_Pago,
+              observations: Observacion
+            };
+
+            netTotal += Total_Neto;
+          });
+          console.log(records);
+          dispatch(fetcSaleRecordsAction(records));
+        }
       });
   };
 }

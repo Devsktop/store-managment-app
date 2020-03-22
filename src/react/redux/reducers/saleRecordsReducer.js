@@ -7,7 +7,6 @@ import {
 
 const initialState = {
   records: {},
-  recordsProducts: {},
   currentRecord: [],
   profits: {
     totalProfitDolar: 0,
@@ -20,7 +19,6 @@ const initialState = {
 export default function reducer(state = initialState, { type, payload }) {
   switch (type) {
     case ADD_SALE_RECORD: {
-      // EFECTOS DE REACT, CAMBIAR CUANDO TENGA SERVIDOR
       const recordId = payload.id;
 
       const records = {
@@ -39,15 +37,9 @@ export default function reducer(state = initialState, { type, payload }) {
         netProfitBolivar: state.profits.netProfitBolivar + profitBolivar
       };
 
-      const recordsProducts = {
-        ...state.recordsProducts,
-        [recordId]: payload.recordProducts
-      };
-
       return {
         ...state,
         records,
-        recordsProducts,
         profits
       };
     }
@@ -55,13 +47,13 @@ export default function reducer(state = initialState, { type, payload }) {
     case SELECT_SALE_RECORD:
       return {
         ...state,
-        currentRecord: payload.id
+        currentRecord: payload.record
       };
 
     case FETCH_SALE_RECORDS:
       return {
         ...state,
-        ...payload
+        records: payload.records
       };
 
     case LOGOUT_SALE_RECORDS:

@@ -188,7 +188,7 @@ router.post('/carritoventa', (req, res) => {
 });//carritoventa
 
 
-//9.-Ver Ventas ----> http://localhost:3000/api/tasks/Ver_Ventas
+//9.-Ver Ventas ----> http://localhost:3000/api/tasks/Ver_Venta
 //Recibe: Id de registro de ventas
 // Retorna:  Id_Venta,  Id_ResumenVenta,	Descripcion_P,	Precio_P,	Cantidad,	Total---> DE LAS VENTAS ASOCIADAS AL REGISTRO DE VENTAS
 
@@ -198,85 +198,62 @@ router.post('/Ver_Venta', (req, res) => {
    `;
 
   mysqlConnection.query(query, [id], (err, rows, fields) => {
-    let userdata;
     if (!err) {
+      const userdata = rows[0];
+      res.json({
+        status: 'ok',
+        userdata
+      });
+
       userdata = rows[0][0];
-      console.log(userdata);
-      //res.json({userdata});
+      res.json({ userdata });
     } else {
       console.log(err);
     }
   });
 });
 
-
-
-
-
 //10.-Crear Backup ----> http://localhost:3000/api/tasks/Backup
 //REQUIERE DEPENDENCIA:  npm install mysql-backup
 //RECIBE: Ruta Destino donde se guardara el respaldo
-router.get('/Backup', (req, res)=> {
-         
-  let {ruta}= req.body;
- // let direc = "C:/Desktop/"
+router.get('/Backup', (req, res) => {
+  let { ruta } = req.body;
+  // let direc = "C:/Desktop/"
   const mysqlBackup = require('mysql-backup');
   var fs = require('fs');
   mysqlBackup({
-      host: 'localhost',
-      user: 'root',
-      password: "",
-      schema: true,
-      data: true,
-      database: 'vapersve',
-      ifNotExist:true
+    host: 'localhost',
+    user: 'root',
+    password: '',
+    schema: true,
+    data: true,
+    database: 'vapersve',
+    ifNotExist: true
   }).then(dump => {
-      fs.writeFileSync(ruta+'VapersBackup.sql', dump); //RUTA + NOMBRE DEL ARCHIVO SQL
+    fs.writeFileSync(ruta + 'VapersBackup.sql', dump); //RUTA + NOMBRE DEL ARCHIVO SQL
 
-  
-      //console.log(dump);
-  })
-  res.json({Status:  " Respaldo guardado con exito" });
-  
-
-
+    //console.log(dump);
+  });
+  res.json({ Status: ' Respaldo guardado con exito' });
 });
-
-
-
 
 //11.-RESTORE ----> http://localhost:3000/api/tasks/Restore
 //RECIBE RUTA DESTINO de donde esta ubicado el respaldo
-router.get('/Restore', (req, res)=> {
-  let {ruta}= req.body;
-  let database = "DB_PRUEBA";//vapersve
-// let direc = "C:/Desktop/"
+router.get('/Restore', (req, res) => {
+  let { ruta } = req.body;
+  let database = 'DB_PRUEBA'; //vapersve
+  // let direc = "C:/Desktop/"
 
   var exec = require('child_process').exec;
-  var cmd = " mysql -u root "+database+" < "+ruta+"VapersBackup.sql";
+  var cmd = ' mysql -u root ' + database + ' < ' + ruta + 'VapersBackup.sql';
   console.log(cmd);
 
-   exec(cmd, function(error, stdout, stderr) {
-// command output is in stdout
+  exec(cmd, function(error, stdout, stderr) {
+    // command output is in stdout
+  });
+
+  res.json({ Status: ' Datos Cargados con exito' });
 });
-  
-  
-      res.json({Status:  " Datos Cargados con exito" });
-
-
-});
-
-
-
-
-
-
-
-
-
-
-
-
 
 //.- Login----> http://localhost:3500/api/tasks/Login
 //Recibe: Username y Password
@@ -297,7 +274,10 @@ router.post('/Login', (req, res) => {
       //     Status: 'Resumen de ventas Desde:' + user + '-Hasta:' + pass
       //   });
     } else {
-      console.log(err);
+      res.json({
+        status: 'error',
+        err
+      });
     }
   });
 });

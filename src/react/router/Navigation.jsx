@@ -14,8 +14,8 @@ import {
   faDoorOpen,
   faDollarSign
 } from '@fortawesome/free-solid-svg-icons';
-import NavIconLink from './NavIconLink';
 import DolarPortal from 'react/components/DolarPortal';
+import NavIconLink from './NavIconLink';
 
 const Navigation = () => {
   const dataLoaded = useSelector(state => state.login.dataLoaded);
@@ -29,6 +29,7 @@ const Navigation = () => {
   // Handle exit button
   const exit = e => {
     e.preventDefault();
+
     Swal.fire({
       title: '¿Cerrar sesión?',
       text: '',
