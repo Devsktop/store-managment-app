@@ -141,10 +141,15 @@ router.post('/carritoventa', (req, res) => {
   const { products, mt, obv } = req.body;
   const query = ` CALL Agregar_Venta(?, ?, ?);
     `;
+
+    const query2 = ` CALL Ver_Registro(?);
+    `;
+
+    
   const dt = ` INSERT INTO resumen_venta ( Total_Venta, Total_Bs, Metodo_Pago, Observacion, Fecha, Total_Neto)  VALUES ( ?, ?, ?, ?, CURDATE(),?);
 `;
 
-  // Llamado Base de Datos INSERT Detale_Venta + Procedure Agregar Venta
+  // Llamado#1 Base de Datos INSERT Detale_Venta + Procedure Agregar Venta
   mysqlConnection.query(dt, [0, 0, mt, obv, 0], (err, rows) => {
     if (!err) {
       IDD = rows.insertId;
@@ -153,17 +158,35 @@ router.post('/carritoventa', (req, res) => {
         // LLAMADO #2 CON CICLO FOR Y MULTIPLES INSERTS
         mysqlConnection.query(query, [id, cant, IDD], () => {});
       });
-      res.json({
+     /* res.json({
         status: 'ok',
         id: IDD
-      });
+      });*/
+        //LLAMADO#3  PARA RETORNAR ID Y TOTAL_NETO  de Resumen de ventas
+      mysqlConnection.query(query2,IDD, (err, rows, fields) =>{
+          let userdata;
+       if (!err) {
+           userdata=rows[0][0];
+           console.log(userdata);
+           res.json({userdata});
+       
+       } else {
+           console.log(err);
+       }
+     });
+  
+
     } else {
       res.json({
         status: 'error'
       });
     }
   });
-});
+
+
+
+});//carritoventa
+
 
 //9.-Ver Ventas ----> http://localhost:3000/api/tasks/Ver_Venta
 //Recibe: Id de registro de ventas
