@@ -1,4 +1,4 @@
-const { app, BrowserWindow, ipcMain } = require('electron');
+const { app, BrowserWindow, ipcMain, dialog } = require('electron');
 const path = require('path');
 const url = require('url');
 const { channels } = require('../src/shared/constants');
@@ -41,6 +41,7 @@ function createWindow() {
     mainWindow = null;
   });
 }
+
 app.on('ready', createWindow);
 app.on('window-all-closed', function() {
   if (process.platform !== 'darwin') {
@@ -51,4 +52,19 @@ app.on('activate', function() {
   if (mainWindow === null) {
     createWindow();
   }
+});
+
+ipcMain.on('select-dirs', async (event, arg) => {
+  const result = await dialog.showOpenDialog(mainWindow, {
+    properties: ['openDirectory']
+  });
+  event.sender.send('folder', result.filePaths[0]);
+});
+
+ipcMain.on('select-file', async (event, arg) => {
+  const result = await dialog.showOpenDialog(mainWindow, {
+    properties: ['openFile'],
+    filters: [{ name: 'sql', extensions: ['sql'] }]
+  });
+  event.sender.send('file', result.filePaths[0]);
 });

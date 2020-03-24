@@ -81,16 +81,14 @@ export const addSaleRecord = () => {
         return fetch(url, config)
           .then(res => res.json())
           .then(res => {
+            console.log(res);
             if (res.status === 'ok') {
-              // EXTRAER EL TOTAL NETO CUANDO ACTUALIZEN RUTA
-              const { id } = res;
+              const { id, netTotal } = res;
               // Dispatch to the stockReducer
               dispatch({
                 type: SUBSTRACT_PRODUCTS,
                 payload: { ...substracProducts }
               });
-              // ESTO LO CREO AQUI MIENTRAS ACTUALIZAN RUTA
-              const netTotal = 0;
 
               // Dispatch to the saleRecordsReducer
               dispatch({
@@ -141,39 +139,42 @@ const selectSaleRecordAction = record => ({
 
 export function selectSaleRecord(id) {
   return (dispatch, getState) => {
-    const url = 'http://localhost:3500/api/tasks/Ver_Venta';
-    const config = {
-      method: 'POST',
-      body: JSON.stringify({ id }),
-      headers: {
-        'Content-Type': 'application/json'
-      }
-    };
-
-    const { exchange } = getState().cart;
-
-    return fetch(url, config)
-      .then(res => res.json())
-      .then(res => {
-        if (res.status === 'ok') {
-          const record = res.userdata.map(e => {
-            const { Descripcion_P, Precio_P, Cantidad, Total, Id_Venta } = e;
-
-            return {
-              id: Id_Venta,
-              product: Descripcion_P,
-              quantity: Cantidad,
-              price: Precio_P,
-              total: Total,
-              totalBs: Total * exchange
-            };
-          });
-          dispatch(selectSaleRecordAction(record));
+    if (id) {
+      const url = 'http://localhost:3500/api/tasks/Ver_Venta';
+      const config = {
+        method: 'POST',
+        body: JSON.stringify({ id }),
+        headers: {
+          'Content-Type': 'application/json'
         }
-      })
-      .catch(err => {
-        console.log(err);
-      });
+      };
+
+      const { exchange } = getState().cart;
+
+      return fetch(url, config)
+        .then(res => res.json())
+        .then(res => {
+          if (res.status === 'ok') {
+            const record = res.userdata.map(e => {
+              const { Descripcion_P, Precio_P, Cantidad, Total, Id_Venta } = e;
+
+              return {
+                id: Id_Venta,
+                product: Descripcion_P,
+                quantity: Cantidad,
+                price: Precio_P,
+                total: Total,
+                totalBs: Total * exchange
+              };
+            });
+            dispatch(selectSaleRecordAction(record));
+          }
+        })
+        .catch(err => {
+          console.log(err);
+        });
+    }
+    return dispatch(selectSaleRecordAction([]));
   };
 }
 

@@ -13,6 +13,8 @@
     "date-fns": "^2.9.0",
     "morgan": "^1.9.1",
     "mysql": "^2.18.1",
+    "mysql-backup": "^1.0.0",
+    "mysql-import": "^4.0.24",
     "node-sass": "^4.13.1",
     "path-to-regexp": "^1.7.0",
     "prop-types": "^15.7.2",

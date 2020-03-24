@@ -139,13 +139,9 @@ router.post('/carritoventa', (req, res) => {
   let IDD = 0;
   // producst [ {id,cant}, ....]
   const { products, mt, obv } = req.body;
-  const query = ` CALL Agregar_Venta(?, ?, ?);
-    `;
+  const query = ` CALL Agregar_Venta(?, ?, ?);`;
 
-    const query2 = ` CALL Ver_Registro(?);
-    `;
-
-    
+  const query2 = ` CALL Ver_Registro(?);`;
   const dt = ` INSERT INTO resumen_venta ( Total_Venta, Total_Bs, Metodo_Pago, Observacion, Fecha, Total_Neto)  VALUES ( ?, ?, ?, ?, CURDATE(),?);
 `;
 
@@ -154,39 +150,31 @@ router.post('/carritoventa', (req, res) => {
     if (!err) {
       IDD = rows.insertId;
 
+      // LLAMADO #2 CON CICLO FOR Y MULTIPLES INSERTS
       products.forEach(({ id, cant }) => {
-        // LLAMADO #2 CON CICLO FOR Y MULTIPLES INSERTS
         mysqlConnection.query(query, [id, cant, IDD], () => {});
       });
-     /* res.json({
-        status: 'ok',
-        id: IDD
-      });*/
-        //LLAMADO#3  PARA RETORNAR ID Y TOTAL_NETO  de Resumen de ventas
-      mysqlConnection.query(query2,IDD, (err, rows, fields) =>{
-          let userdata;
-       if (!err) {
-           userdata=rows[0][0];
-           console.log(userdata);
-           res.json({userdata});
-       
-       } else {
-           console.log(err);
-       }
-     });
-  
 
+      // LLAMADO#3  PARA RETORNAR ID Y TOTAL_NETO  de Resumen de ventas
+      mysqlConnection.query(query2, IDD, (err2, rows, fields) => {
+        if (!err2) {
+          const netTotal = rows[0][0].Total_Neto;
+          res.json({
+            status: 'ok',
+            id: IDD,
+            netTotal
+          });
+        } else {
+          console.log(err2);
+        }
+      });
     } else {
       res.json({
         status: 'error'
       });
     }
   });
-
-
-
-});//carritoventa
-
+}); //carritoventa
 
 //9.-Ver Ventas ----> http://localhost:3000/api/tasks/Ver_Venta
 //Recibe: Id de registro de ventas
@@ -215,7 +203,7 @@ router.post('/Ver_Venta', (req, res) => {
 //10.-Crear Backup ----> http://localhost:3000/api/tasks/Backup
 //REQUIERE DEPENDENCIA:  npm install mysql-backup
 //RECIBE: Ruta Destino donde se guardara el respaldo
-router.get('/Backup', (req, res) => {
+router.post('/Backup', (req, res) => {
   let { ruta } = req.body;
   // let direc = "C:/Desktop/"
   const mysqlBackup = require('mysql-backup');
@@ -229,29 +217,36 @@ router.get('/Backup', (req, res) => {
     database: 'vapersve',
     ifNotExist: true
   }).then(dump => {
-    fs.writeFileSync(ruta + 'VapersBackup.sql', dump); //RUTA + NOMBRE DEL ARCHIVO SQL
+    fs.writeFileSync(ruta + '/VapersBackup.sql', dump); //RUTA + NOMBRE DEL ARCHIVO SQL
 
     //console.log(dump);
   });
-  res.json({ Status: ' Respaldo guardado con exito' });
+  res.json({ status: 'ok' });
 });
 
-//11.-RESTORE ----> http://localhost:3000/api/tasks/Restore
-//RECIBE RUTA DESTINO de donde esta ubicado el respaldo
-router.get('/Restore', (req, res) => {
+// 11.-RESTORE ----> http://localhost:3000/api/tasks/Restore
+// RECIBE RUTA DESTINO de donde esta ubicado el respaldo
+router.post('/Restore', (req, res) => {
   let { ruta } = req.body;
-  let database = 'DB_PRUEBA'; //vapersve
-  // let direc = "C:/Desktop/"
+  const database = 'vapersve'; // vapersve
 
-  var exec = require('child_process').exec;
-  var cmd = ' mysql -u root ' + database + ' < ' + ruta + 'VapersBackup.sql';
-  console.log(cmd);
-
-  exec(cmd, function(error, stdout, stderr) {
-    // command output is in stdout
+  const mysql_import = require('mysql-import');
+  const importer = new mysql_import({
+    host: 'localhost',
+    user: 'root',
+    password: '',
+    database
   });
 
-  res.json({ Status: ' Datos Cargados con exito' });
+  importer
+    .import(ruta)
+    .then(() => {
+      res.json({ status: 'ok' });
+    })
+    .catch(err => {
+      res.json({ status: 'error' });
+      console.log(err);
+    });
 });
 
 module.exports = router;

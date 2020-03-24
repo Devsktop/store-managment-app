@@ -12,7 +12,7 @@ const Records = () => {
   if (!state) return <Redirect to="/" />;
 
   return (
-    <div className="container">
+    <div className="container records">
       <RecordsFilter />
       <RecordsTable />
       <ProductsTable />
