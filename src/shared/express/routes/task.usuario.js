@@ -20,7 +20,8 @@ router.post('/usuario', (req, res) => {
         });
       } else {
         res.json({
-          status: 'error'
+          status: 'error',
+          err
         });
       }
     }
@@ -66,7 +67,7 @@ router.post('/actusuario', (req, res) => {
     if (!err) {
       res.json({ status: 'ok' });
     } else {
-      res.json({ status: 'ok' });
+      res.json({ status: 'error', err });
     }
   });
 });

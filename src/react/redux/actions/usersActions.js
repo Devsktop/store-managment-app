@@ -55,6 +55,19 @@ export const createUser = usern => {
                   title: 'title-class'
                 }
               });
+            } else if (res.err.errno === 1062) {
+              // if user's  name is already used
+              Swal.hideLoading();
+              Swal.fire({
+                title: 'Ya existe un usuario con ese nombre',
+                text: '',
+                icon: 'error',
+                confirmButtonText: 'Aceptar',
+                customClass: {
+                  icon: 'icon-class',
+                  title: 'title-class'
+                }
+              });
             }
           })
           .catch(() => {
@@ -103,6 +116,7 @@ export const editeUser = usern => {
         return fetch(url, config)
           .then(res => res.json())
           .then(res => {
+            console.log(res);
             if (res.status === 'ok') {
               const newUser = { ...usern };
               delete newUser.pass;
@@ -114,6 +128,19 @@ export const editeUser = usern => {
                 title: 'El usuario se ha modificado con éxito',
                 text: '',
                 icon: 'success',
+                confirmButtonText: 'Aceptar',
+                customClass: {
+                  icon: 'icon-class',
+                  title: 'title-class'
+                }
+              });
+            } else if (res.err.errno === 1062) {
+              // if user's  name is already used
+              Swal.hideLoading();
+              Swal.fire({
+                title: 'Ya existe un usuario con ese nombre',
+                text: '',
+                icon: 'error',
                 confirmButtonText: 'Aceptar',
                 customClass: {
                   icon: 'icon-class',

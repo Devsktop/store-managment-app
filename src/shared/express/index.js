@@ -9,6 +9,7 @@
   app.set('port', 3500);
 
   app.use(morgan('dev'));
+  app.use(express.urlencoded({ extended: true }));
   app.use(express.json());
 
   // cors

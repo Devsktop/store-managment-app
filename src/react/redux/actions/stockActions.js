@@ -59,6 +59,19 @@ export const createProduct = productn => {
                   title: 'title-class'
                 }
               });
+            } else if (res.err.errno === 1062) {
+              // if product's  name is already used
+              Swal.hideLoading();
+              Swal.fire({
+                title: 'Ya existe un producto con ese nombre',
+                text: '',
+                icon: 'error',
+                confirmButtonText: 'Aceptar',
+                customClass: {
+                  icon: 'icon-class',
+                  title: 'title-class'
+                }
+              });
             }
           })
           .catch(() => {
@@ -117,6 +130,19 @@ export const editeProduct = productn => {
                 title: 'El producto se ha modificado con éxito',
                 text: '',
                 icon: 'success',
+                confirmButtonText: 'Aceptar',
+                customClass: {
+                  icon: 'icon-class',
+                  title: 'title-class'
+                }
+              });
+            } else if (res.err.errno === 1062) {
+              // if product's  name is already used
+              Swal.hideLoading();
+              Swal.fire({
+                title: 'Ya existe un producto con ese nombre',
+                text: '',
+                icon: 'error',
                 confirmButtonText: 'Aceptar',
                 customClass: {
                   icon: 'icon-class',

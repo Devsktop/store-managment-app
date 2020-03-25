@@ -15,7 +15,7 @@ router.post('/producto', (req, res) => {
   mysqlConnection.query(
     query,
     [desc, precio, stock, cat, precio_c],
-    (err, rows, fields) => {
+    (err, rows) => {
       if (!err) {
         res.json({
           status: 'ok',
@@ -23,7 +23,8 @@ router.post('/producto', (req, res) => {
         });
       } else {
         res.json({
-          status: 'error'
+          status: 'error',
+          err
         });
       }
     }
@@ -72,7 +73,8 @@ router.post('/actproducto', (req, res) => {
         });
       } else {
         res.json({
-          status: 'error'
+          status: 'error',
+          err
         });
       }
     }
@@ -245,7 +247,6 @@ router.post('/Restore', (req, res) => {
     })
     .catch(err => {
       res.json({ status: 'error' });
-      console.log(err);
     });
 });
 

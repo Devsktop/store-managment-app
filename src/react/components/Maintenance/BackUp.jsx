@@ -55,9 +55,13 @@ const BackUp = () => {
                     title: 'title-class'
                   }
                 });
+              } else {
+                Swal.hideLoading();
+                Swal.showValidationMessage('Ha ocurrido un error');
               }
             })
             .catch(() => {
+              Swal.hideLoading();
               Swal.showValidationMessage('Ha ocurrido un error');
             });
         },
